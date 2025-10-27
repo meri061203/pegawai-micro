@@ -49,7 +49,7 @@
                                     <th class="min-w-120px">Tempat Lahir</th>
                                     <th class="min-w-100px">Tanggal Lahir</th>
                                     <th class="min-w-120px">NIK</th>
-                                    <th class="min-w-100px">No_HP</th>
+                                    <th class="min-w-100px">No. HP</th>
                                     <th class="min-w-100px">Email</th>
                                 </tr>
                                 </thead>

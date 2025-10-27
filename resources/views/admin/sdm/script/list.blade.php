@@ -47,8 +47,8 @@
                 searchable: false
             },
                 {
-                    data: 'nama_lengkap',
-                    name: 'nama_lengkap'
+                    data: 'nama',
+                    name: 'nama'
                 },
                 {
                     data: 'jk',
@@ -73,8 +73,8 @@
                     name: 'nik'
                 },
                 {
-                    data: 'no_hp',
-                    name: 'no_hp'
+                    data: 'nomor_hp',
+                    name: 'nomor_hp'
                 },
                 {
                     data: 'email',
