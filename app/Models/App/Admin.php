@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -23,11 +23,12 @@ final class Admin extends Authenticatable
         'nama',
         'email',
         'role',
+        'password',
     ];
 
     protected $guarded = [
         'id_admin',
-        'password',
+
     ];
 
     protected $hidden = [
