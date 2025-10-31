@@ -44,8 +44,8 @@
                                 <thead>
                                 <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0 fs-sm-8 fs-lg-6">
                                     <th class="min-w-75px ps-5">Aksi</th>
-                                    <th class="min-w-150px">Nama_Lengkap</th>
-                                    <th class="min-w-60px">Nama_Panggilan</th>
+                                    <th class="min-w-150px">Nama Lengkap</th>
+                                    <th class="min-w-60px">Nama Panggilan</th>
                                     <th class="min-w-120px">Tempat Lahir</th>
                                     <th class="min-w-100px">Tanggal Lahir</th>
                                     <th class="min-w-120px">NIK</th>

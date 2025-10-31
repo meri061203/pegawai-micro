@@ -1,262 +1,171 @@
-<div class="modal fade" id="form_edit" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog"
-     aria-hidden="true">
-    <div class="modal-dialog modal-xl" role="document">
-        <form method="post" id="bt_submit_edit" enctype="multipart/form-data">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Edit Person</h5>
-                    <a type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></a>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <!-- Kolom 1: Foto -->
-                        <div class="col-md-3">
-                            <div class="d-flex flex-column align-items-center mb-4">
-                                <h6 class="text-primary fw-bold mb-3">Foto Profil</h6>
-                                <div class="image-input image-input-outline" data-kt-image-input="true">
-                                    <div id="edit_image_preview"
-                                         class="image-input-wrapper w-150px h-150px rounded border"
-                                         style="background-size: contain; background-repeat: no-repeat; background-position: center;"></div>
+<script defer>
+    $('#form_edit').on('show.bs.modal', function (e) {
+        // Don't reset here - let global cleaner handle it
+        const button = $(e.relatedTarget);
+        const id = button.data("id");
+        const detail = '{{ route('admin.keluarga.show', [':id']) }}';
 
-                                    <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
-                                           data-kt-image-input-action="change" data-bs-toggle="tooltip"
-                                           title="Ganti foto">
-                                        <i class="bi bi-pencil fs-5">
-                                        </i>
-                                        <input type="file" id="edit_foto" name="foto" accept=".jpg,.jpeg,.png"/>
-                                        <input type="hidden" name="foto_remove"/>
-                                    </label>
+        let edit_tanggal_lahir = $('#edit_tanggal_lahir').flatpickr({
+            dateFormat: 'Y-m-d',
+            altFormat: 'd/m/Y',
+            allowInput: false,
+            altInput: true,
+        });
 
-                                    <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
-                                          data-kt-image-input-action="cancel" data-bs-toggle="tooltip"
-                                          title="Batal ganti foto">
-                                        <i class="bi bi-trash fs-5">
-                                        </i>
-                                    </span>
+        DataManager.fetchData(detail.replace(':id', id))
+            .then(function (response) {
+                if (response.success) {
+                    $('#edit_status').val(response.data.status).trigger('change');
+                    $('#edit_status_tanggungan').val(response.data.status_tanggungan).trigger('change');
 
-                                    <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow"
-                                          data-kt-image-input-action="remove" data-bs-toggle="tooltip"
-                                          title="Hapus foto">
-                                        <i class="bi bi-trash fs-5">
-                                        </i>
-                                    </span>
-                                </div>
-                                <div class="form-text text-muted text-center mt-2">
-                                    JPG, JPEG, PNG<br>Maksimal 2MB<br><small>Kosongkan jika tidak ingin mengubah</small>
-                                </div>
-                            </div>
-                        </div>
 
-                        <!-- Kolom 2: Data Dasar -->
-                        <div class="col-md-4">
-                            <h6 class="text-primary fw-bold mb-3 border-bottom border-primary pb-2">Data Dasar</h6>
+                    // Handle foto preview
+                    if (response.data.foto) {
+                        const photoUrl = '{{ route('admin.view-file', [':folder', ':filename']) }}'
+                            .replace(':folder', 'person')
+                            .replace(':filename', response.data.foto);
+                        $('#edit_image_preview').css('background-image', `url('${photoUrl}')`);
+                        $('#edit_image_preview').css('background-size', 'cover');
+                        $('#edit_image_preview').css('background-position', 'center');
+                    } else {
+                        $('#edit_image_preview').css('background-image', '');
+                        $('#edit_image_preview').css('background-size', 'contain');
+                        $('#edit_image_preview').css('background-position', 'center');
+                    }
+                    fetchDataDropdown('{{ route('api.almt.provinsi') }}', '#edit_id_provinsi', 'provinsi', 'provinsi', () => {
+                        const provinsiOptions = $('#edit_id_provinsi option');
+                        provinsiOptions.each(function () {
+                            if ($(this).text() === response.data.provinsi) {
+                                $('#edit_id_provinsi').val($(this).val()).trigger('change');
 
-                            <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1 required">
-                                    <span>Nama</span>
-                                </label>
-                                <input type="text" id="edit_nama" class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                       maxlength="50" required/>
-                                <div class="invalid-feedback"></div>
-                            </div>
+                                setTimeout(() => {
+                                    const kabupatenOptions = $('#edit_id_kabupaten option');
+                                    kabupatenOptions.each(function () {
+                                        if ($(this).text() === response.data.kabupaten) {
+                                            $('#edit_id_kabupaten').val($(this).val()).trigger('change');
 
-                            <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1 required">
-                                    <span>Jenis Kelamin</span>
-                                </label>
-                                <select data-control="select2" id="edit_jk"
-                                        class="form-control form-control-sm fs-sm-8 fs-lg-6" data-allow-clear="true"
-                                        data-placeholder="Pilih Jenis Kelamin" required>
-                                    <option value="">Pilih Jenis Kelamin</option>
-                                    <option value="L">Laki-laki</option>
-                                    <option value="P">Perempuan</option>
-                                </select>
-                                <div class="invalid-feedback"></div>
-                            </div>
+                                            setTimeout(() => {
+                                                const kecamatanOptions = $('#edit_id_kecamatan option');
+                                                kecamatanOptions.each(function () {
+                                                    if ($(this).text() === response.data.kecamatan) {
+                                                        $('#edit_id_kecamatan').val($(this).val()).trigger('change');
 
-                            <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1 required">
-                                    <span>Tempat Lahir</span>
-                                </label>
-                                <input type="text" id="edit_tempat_lahir"
-                                       class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                       maxlength="30" required/>
-                                <div class="invalid-feedback"></div>
-                            </div>
+                                                        setTimeout(() => {
+                                                            const desaOptions = $('#edit_id_desa option');
+                                                            desaOptions.each(function () {
+                                                                if ($(this).text() === response.data.desa) {
+                                                                    $('#edit_id_desa').val($(this).val()).trigger('change');
+                                                                    return false;
+                                                                }
+                                                            });
+                                                        }, 1000);
+                                                        return false;
+                                                    }
+                                                });
+                                            }, 1000);
+                                            return false;
+                                        }
+                                    });
+                                }, 1000);
+                                return false;
+                            }
+                        });
+                    });
+                } else {
+                    Swal.fire('Warning', response.message, 'warning');
+                }
+            }).catch(function (error) {
+            ErrorHandler.handleError(error);
+        });
 
-                            <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1 required">
-                                    <span>Tanggal Lahir</span>
-                                </label>
-                                <input type="text" id="edit_tanggal_lahir"
-                                       class="form-control form-control-sm fs-sm-8 fs-lg-6" required/>
-                                <div class="invalid-feedback"></div>
-                            </div>
+        $('#edit_id_provinsi').off('change.edit').on('change.edit', function () {
+            const provinsiId = $(this).val();
+            $('#edit_id_kabupaten').empty().append('<option value="">-- Pilih Kabupaten/Kota --</option>');
+            $('#edit_id_kecamatan').empty().append('<option value="">-- Pilih Kecamatan --</option>');
+            $('#edit_id_desa').empty().append('<option value="">-- Pilih Desa/Kelurahan --</option>');
 
-                            <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                    <span>Kewarganegaraan</span>
-                                </label>
-                                <input type="text" id="edit_kewarganegaraan"
-                                       class="form-control form-control-sm fs-sm-8 fs-lg-6"/>
-                                <div class="invalid-feedback"></div>
-                            </div>
+            if (provinsiId) {
+                const kabupatenUrl = `{{ route('api.almt.kabupaten', ':id') }}`.replace(':id', provinsiId);
+                fetchDataDropdown(kabupatenUrl, '#edit_id_kabupaten', 'kabupaten', 'kabupaten');
+            }
+        });
 
-                            <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                    <span>Golongan Darah</span>
-                                </label>
-                                <select data-control="select2" id="edit_golongan_darah"
-                                        class="form-control form-control-sm fs-sm-8 fs-lg-6" data-allow-clear="true"
-                                        data-placeholder="Pilih Golongan Darah">
-                                    <option value="">Pilih Golongan Darah</option>
-                                    <option value="A">A</option>
-                                    <option value="B">B</option>
-                                    <option value="AB">AB</option>
-                                    <option value="O">O</option>
-                                </select>
-                                <div class="invalid-feedback"></div>
-                            </div>
+        $('#edit_id_kabupaten').off('change.edit').on('change.edit', function () {
+            const kabupatenId = $(this).val();
+            $('#edit_id_kecamatan').empty().append('<option value="">-- Pilih Kecamatan --</option>');
+            $('#edit_id_desa').empty().append('<option value="">-- Pilih Desa/Kelurahan --</option>');
 
-                            <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                    <span>NIK</span>
-                                </label>
-                                <input type="text" id="edit_nik" class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                       maxlength="16"/>
-                                <div class="invalid-feedback"></div>
-                            </div>
+            if (kabupatenId) {
+                const kecamatanUrl = `{{ route('api.almt.kecamatan', ':id') }}`.replace(':id', kabupatenId);
+                fetchDataDropdown(kecamatanUrl, '#edit_id_kecamatan', 'kecamatan', 'kecamatan');
+            }
+        });
 
-                            <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                    <span>Nomor KK</span>
-                                </label>
-                                <input type="text" id="edit_nomor_kk"
-                                       class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                       maxlength="16"/>
-                                <div class="invalid-feedback"></div>
-                            </div>
+        $('#edit_id_kecamatan').off('change.edit').on('change.edit', function () {
+            const kecamatanId = $(this).val();
+            $('#edit_id_desa').empty().append('<option value="">-- Pilih Desa/Kelurahan --</option>');
 
-                            <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                    <span>NPWP</span>
-                                </label>
-                                <input type="text" id="edit_npwp" class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                       maxlength="30"/>
-                                <div class="invalid-feedback"></div>
-                            </div>
+            if (kecamatanId) {
+                const desaUrl = `{{ route('api.almt.desa', ':id') }}`.replace(':id', kecamatanId);
+                fetchDataDropdown(desaUrl, '#edit_id_desa', 'desa', 'desa');
+            }
+        });
 
-                            <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                    <span>Nomor HP</span>
-                                </label>
-                                <input type="text" id="edit_nomor_hp"
-                                       class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                       maxlength="16"/>
-                                <div class="invalid-feedback"></div>
-                            </div>
+        $('#bt_submit_edit').off('submit').on('submit', function (e) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Kamu yakin?',
+                text: 'Apakah datanya benar dan apa yang anda inginkan?',
+                icon: 'warning',
+                confirmButtonColor: '#3085d6',
+                allowOutsideClick: false, allowEscapeKey: false,
+                showCancelButton: true,
+                cancelButtonColor: '#dd3333',
+                confirmButtonText: 'Ya, Simpan', cancelButtonText: 'Batal', focusCancel: true,
+            }).then((result) => {
+                if (result.value) {
+                    DataManager.openLoading();
+                    const formData = new FormData();
+                    formData.append('id_sdm', $('#edit_id_sdm').val());
+                    formData.append('id_person', $('#edit_id_person').val());
+                    formData.append('status', $('#edit_status').val());
+                    formData.append('status_tanggungan', $('#edit_status_tanggungan').val());
 
-                            <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                    <span>Email</span>
-                                </label>
-                                <input type="text" id="edit_email" class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                       maxlength="100"/>
-                                <div class="invalid-feedback"></div>
-                            </div>
-                        </div>
 
-                        <!-- Kolom 3: Alamat -->
-                        <div class="col-md-5">
-                            <h6 class="text-primary fw-bold mb-3 border-bottom border-primary pb-2">Alamat</h6>
+                    const fileInput = $('#edit_foto')[0];
+                    if (fileInput.files[0]) {
+                        formData.append('foto', fileInput.files[0]);
+                    }
 
-                            <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                    <span>Alamat</span>
-                                </label>
-                                <textarea id="edit_alamat" class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                          maxlength="100" rows="3"></textarea>
-                                <div class="invalid-feedback"></div>
-                            </div>
+                    const update = '{{ route('admin.person.update', [':id']) }}';
+                    DataManager.formData(update.replace(':id', id), formData).then(response => {
+                        if (response.success) {
+                            Swal.fire('Success', response.message, 'success');
+                            setTimeout(function () {
+                                location.reload();
+                            }, 1000);
+                        }
+                        if (!response.success && response.errors) {
+                            const validationErrorFilter = new ValidationErrorFilter(
+                                'edit_');
+                            validationErrorFilter.filterValidationErrors(response);
+                            Swal.fire('Peringatan', 'Isian Anda belum lengkap atau tidak valid.', 'warning');
+                        }
 
-                            <div class="row">
-                                <div class="col-6">
-                                    <div class="d-flex flex-column mb-2">
-                                        <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                            <span>RT</span>
-                                        </label>
-                                        <input type="text" id="edit_rt"
-                                               class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                               maxlength="3"/>
-                                        <div class="invalid-feedback"></div>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="d-flex flex-column mb-2">
-                                        <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                            <span>RW</span>
-                                        </label>
-                                        <input type="text" id="edit_rw"
-                                               class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                               maxlength="3"/>
-                                        <div class="invalid-feedback"></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                    <span>Provinsi</span>
-                                </label>
-                                <select data-control="select2" id="edit_id_provinsi"
-                                        class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                        data-allow-clear="true" data-placeholder="Pilih Provinsi">
-                                </select>
-                                <div class="invalid-feedback"></div>
-                            </div>
-
-                            <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                    <span>Kabupaten/Kota</span>
-                                </label>
-                                <select data-control="select2" id="edit_id_kabupaten"
-                                        class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                        data-allow-clear="true" data-placeholder="Pilih Kabupaten/Kota">
-                                </select>
-                                <div class="invalid-feedback"></div>
-                            </div>
-
-                            <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                    <span>Kecamatan</span>
-                                </label>
-                                <select data-control="select2" id="edit_id_kecamatan"
-                                        class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                        data-allow-clear="true" data-placeholder="Pilih Kecamatan">
-                                </select>
-                                <div class="invalid-feedback"></div>
-                            </div>
-
-                            <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                    <span>Desa/Kelurahan</span>
-                                </label>
-                                <select data-control="select2" id="edit_id_desa"
-                                        class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                        data-allow-clear="true" data-placeholder="Pilih Desa/Kelurahan">
-                                </select>
-                                <div class="invalid-feedback"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-sm btn-dark fs-sm-8 fs-lg-6" data-bs-dismiss="modal"
-                            aria-label="Close">Close
-                    </button>
-                    <button type="submit" class="btn btn-sm btn-primary fs-sm-8 fs-lg-6">Simpan</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
+                        if (!response.success && !response.errors) {
+                            Swal.fire('Warning', response.message, 'warning');
+                        }
+                    }).catch(error => {
+                        ErrorHandler.handleError(error);
+                    });
+                }
+            })
+        });
+    }).on('hidden.bs.modal', function () {
+        const $m = $(this);
+        $m.find('form').trigger('reset');
+        $m.find('select, textarea').val('').trigger('change');
+        $m.find('.is-invalid, .is-valid').removeClass('is-invalid is-valid');
+        $m.find('.invalid-feedback, .valid-feedback, .text-danger').remove();
+    });
+</script>

@@ -7,7 +7,7 @@
         DataManager.fetchData(detail.replace(':id', id))
             .then(function (response) {
                 if (response.success) {
-                    $('#detail_nama_lengkap').text(response.data.nama);
+                    $('#detail_nama_lengkap').text(response.data.nama_lengkap);
                     $('#detail_nama_panggilan').text(response.data.nama_panggilan);
                     $('#detail_tempat_lahir').text(response.data.tempat_lahir);
                     $('#detail_tanggal_lahir').text(formatter.formatDate(response.data.tanggal_lahir));

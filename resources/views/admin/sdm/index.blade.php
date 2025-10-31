@@ -6,11 +6,11 @@
     <link rel="stylesheet" href="{{ asset('assets/plugins/datatables/buttons.dataTables.min.css') }}"/>
 @endsection
 @section('list')
-    <li class="breadcrumb-item text-muted">Person</li>
+    <li class="breadcrumb-item text-muted">SDM</li>
     <li class="breadcrumb-item">
         <span class="bullet bg-gray-200 w-5px h-2px"></span>
     </li>
-    <li class="breadcrumb-item text-dark">Data Person</li>
+    <li class="breadcrumb-item text-dark">Data SDM</li>
 @endsection
 
 @section('content')
@@ -20,12 +20,12 @@
             <div class="card mb-xl-8 mb-5 border-2 shadow">
                 <div class="card-header">
                     <h3 class="card-title align-items-start flex-column">
-                        <span class="card-label fw-bolder mb-1 ">Data Person</span>
+                        <span class="card-label fw-bolder mb-1 ">Data SDM</span>
                     </h3>
                     <div class="card-toolbar">
                         <div class="d-flex justify-content-end" data-kt-user-table-toolbar="base">
                             <a type="button" class="btn btn-sm btn-primary fs-sm-8 fs-lg-6" data-bs-toggle="modal"
-                               data-bs-target="#form_create" title="Tambah Person">Tambah Person</a>
+                               data-bs-target="#form_create" title="Tambah SDM">Tambah Person</a>
                         </div>
                     </div>
                 </div>
@@ -33,7 +33,7 @@
                     <div class="notice d-flex border-primary mb-4 rounded border border-dashed p-4 shadow bg-hover-light-dark">
                         <div class="d-flex flex-stack fs-sm-8 fs-lg-6">
                             <div class="row">
-                                <span class="text-gray-700">Berikut ini adalah data Person.</span>
+                                <span class="text-gray-700">Berikut ini adalah data SDM.</span>
                             </div>
                         </div>
                     </div>
@@ -44,13 +44,11 @@
                                 <thead>
                                 <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0 fs-sm-8 fs-lg-6">
                                     <th class="min-w-75px ps-5">Aksi</th>
-                                    <th class="min-w-150px">Nama_Lengkap</th>
-                                    <th class="min-w-60px">Nama_Panggilan</th>
-                                    <th class="min-w-120px">Tempat Lahir</th>
-                                    <th class="min-w-100px">Tanggal Lahir</th>
-                                    <th class="min-w-120px">NIK</th>
-                                    <th class="min-w-100px">No. HP</th>
-                                    <th class="min-w-100px">Email</th>
+                                    <th class="min-w-150px">NIP</th>
+                                    <th class="min-w-60px">Status Pegawai</th>
+                                    <th class="min-w-120px">Tipe Pegawai</th>
+                                    <th class="min-w-100px">Tanggal Masuk</th>
+                                    <th class="min-w-120px">Id Person</th>
                                 </tr>
                                 </thead>
                                 <tbody class="text-gray-800 fw-bolder fs-sm-8 fs-lg-6">

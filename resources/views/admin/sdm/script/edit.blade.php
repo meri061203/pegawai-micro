@@ -15,20 +15,11 @@
         DataManager.fetchData(detail.replace(':id', id))
             .then(function (response) {
                 if (response.success) {
-                    $('#edit_nama_lengkap').val(response.data.nama_lengkap);
-                    $('#edit_nama_panggilan').val(response.data.nama_panggilan).trigger('change');
-                    $('#edit_tempat_lahir').val(response.data.tempat_lahir);
-                    edit_tanggal_lahir.setDate(response.data.tanggal_lahir);
-                    $('#edit_agama').val(response.data.agama);
-                    $('#edit_kewarganegaraan').val(response.data.kewarganegaraan);
-                    $('#edit_email').val(response.data.email);
-                    $('#edit_no_hp').val(response.data.no_hp);
-                    $('#edit_foto').val(response.data.foto);
-                    $('#edit_nik').val(response.data.nik);
-                    $('#edit_kk').val(response.data.kk);
-                    $('#edit_alamat').val(response.data.alamat);
-                    $('#edit_created_at').val(response.data.created_at);
-                    $('#edit_updated_at').val(response.data.updated_at).trigger('change');
+                    $('#edit_nip').val(response.data.nip);
+                    $('#edit_status_pegawai').val(response.data.status_pegawai).trigger('change');
+                    $('#edit_tipe_pegawai').val(response.data.tipe_pegawai);
+                    $('#edit_tanggal_masuk').val(response.data.tanggal_masuk);
+                    $('#edit_id_person').val(response.data.id_person).trigger('change');
 
 
                     // Handle foto preview
@@ -143,8 +134,7 @@
                     formData.append('tipe_pegawai', $('#edit_tipe_pegawai').val());
                     formData.append('tanggal_masuk', $('#edit_tanggal_masuk').val());
                     formData.append('id_person', $('#edit_id_person').val());
-                    formData.append('created_at', $('#edit_created_at').val());
-                    formData.append('updated_at', $('#edit_updated_at').val());
+
 
 
                     const fileInput = $('#edit_foto')[0];
@@ -152,7 +142,7 @@
                         formData.append('foto', fileInput.files[0]);
                     }
 
-                    const update = '{{ route('admin.person.update', [':id']) }}';
+                    const update = '{{ route('admin.sdm.update', [':id']) }}';
                     DataManager.formData(update.replace(':id', id), formData).then(response => {
                         if (response.success) {
                             Swal.fire('Success', response.message, 'success');

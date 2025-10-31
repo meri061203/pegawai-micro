@@ -47,39 +47,31 @@
                 searchable: false
             },
                 {
-                    data: 'nama',
-                    name: 'nama'
+                    data: 'nip',
+                    name: 'nip'
                 },
                 {
-                    data: 'jk',
-                    name: 'jk',
+                    data: 'status_pegawai',
+                    name: 'status_pegawai',
                     render: function (data) {
-                        return data === 'L' ? 'Laki-laki' : (data === 'P' ? 'Perempuan' : data);
+                        return data === 'T' ? 'TETAP' : (data === 'K' ? 'KONTRAK' : data);
                     }
                 },
                 {
-                    data: 'tempat_lahir',
-                    name: 'tempat_lahir'
+                    data: 'tipe_pegawai',
+                    name: 'tipe_pegawai',
+                    render: function (data) {
+                        return data === 'FT' ? 'FULL TIME' : (data === 'PT' ? 'PART TIME' : data);
+                    }
                 },
                 {
-                    data: 'tanggal_lahir',
-                    name: 'tanggal_lahir',
+                    data: 'tanggal_masuk',
+                    name: 'tanggal_masuk',
                     render: function (data) {
                         return data == null ? '' : formatter.formatDate(data);
                     }
                 },
-                {
-                    data: 'nik',
-                    name: 'nik'
-                },
-                {
-                    data: 'nomor_hp',
-                    name: 'nomor_hp'
-                },
-                {
-                    data: 'email',
-                    name: 'email'
-                }
+               
             ],
         });
         const performOptimizedSearch = _.debounce(function (query) {
