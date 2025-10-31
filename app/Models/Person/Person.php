@@ -24,7 +24,7 @@ final class Person extends Model implements Auditable
 
     protected $table = 'person';
 
-    protected $primaryKey = 'id_person';
+    protected $primaryKey = 'id';
 
     protected $keyType = 'int';
 
@@ -52,11 +52,11 @@ final class Person extends Model implements Auditable
     ];
 
     protected $guarded = [
-        'id_person',
+        'id',
     ];
 
     protected $casts = [
-        'id_person' => 'integer',
+        'id' => 'integer',
         'id_desa' => 'integer',
         'tanggal_lahir' => 'date',
     ];
@@ -74,6 +74,11 @@ final class Person extends Model implements Auditable
     public function setTempatLahirAttribute($value): void
     {
         $this->attributes['tempat_lahir'] = trim(strip_tags($value));
+    }
+
+    public function setAgamaAttribute($value): void
+    {
+        $this->attributes['agama'] = trim(strip_tags($value));
     }
 
     public function setAlamatAttribute($value): void
@@ -98,7 +103,7 @@ final class Person extends Model implements Auditable
 
     public function setNomorKkAttribute($value): void
     {
-        $this->attributes['nomor_kk'] = trim(strip_tags($value));
+        $this->attributes['kk'] = trim(strip_tags($value));
     }
 
     public function setIdDesaAttribute($value): void
@@ -113,7 +118,7 @@ final class Person extends Model implements Auditable
 
     public function setNomorHpAttribute($value): void
     {
-        $this->attributes['nomor_hp'] = $value ? trim(strip_tags($value)) : null;
+        $this->attributes['no_hp'] = $value ? trim(strip_tags($value)) : null;
     }
 
     public function setEmailAttribute($value): void

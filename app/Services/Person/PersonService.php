@@ -6,30 +6,43 @@ use App\Models\Person\Person;
 use App\Services\Tools\FileUploadService;
 use Illuminate\Support\Collection;
 
-final readonly class PersonService
-{
+class  PersonService{
     public function __construct(
-        private FileUploadService $fileUploadService,
-    )
-    {
-    }
+        private FileUploadService $fileUploadService
+    ){}
 
     public function getListData(): Collection
     {
-        return Person::select([
-            'id_person',
-            'uuid_person',
-            'nama',
-            'jk',
+        $query = Person::select([
+            'id',
+            'nama_lengkap',
+            'nama_panggilan',
             'tempat_lahir',
             'tanggal_lahir',
-            'nik',
-            'nomor_kk',
-            'npwp',
-            'nomor_hp',
+            'agama',
+            'kewarganegaraan',
             'email',
+            'no_hp',
             'foto',
-        ])->orderBy('nama')->get();
+            'jk',
+            'nik',
+            'kk',
+            'npwp',
+            'alamat',
+            'id_desa'
+        ]);
+
+        $search = request('search.value');
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('nama_lengkap', 'like', "%{$search}%")
+                ->orWhere('nama_panggilan', 'like', "%{$search}%")
+                ->orWhere('tempat_lahir', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('no_hp', 'like', "%{$search}%");
+            });
+        }
+        return $query->get();
     }
 
     public function create(array $data): Person
@@ -51,7 +64,7 @@ final readonly class PersonService
                 'ref_almt_kabupaten.kabupaten',
                 'ref_almt_provinsi.provinsi',
             ])
-            ->where('person.id_person', $id)
+            ->where('person.id', $id)
             ->first();
     }
 
@@ -60,7 +73,7 @@ final readonly class PersonService
         return Person::find($id);
     }
 
-    public function update(Person $person, array $data): Person
+     public function update(Person $person, array $data): Person
     {
         $person->update($data);
 
@@ -88,9 +101,9 @@ final readonly class PersonService
             ->leftJoin('ref_almt_kabupaten', 'ref_almt_kecamatan.id_kabupaten', '=', 'ref_almt_kabupaten.id_kabupaten')
             ->leftJoin('ref_almt_provinsi', 'ref_almt_kabupaten.id_provinsi', '=', 'ref_almt_provinsi.id_provinsi')
             ->select([
-                'person.id_person',
+                'person.id',
                 'person.nik',
-                'person.nama',
+                'person.nama_lengkap',
                 'person.tempat_lahir',
                 'person.tanggal_lahir',
                 'ref_almt_desa.desa',
@@ -99,7 +112,7 @@ final readonly class PersonService
                 'ref_almt_provinsi.provinsi',
             ])
             ->where('person.nik', $nik)
-            ->orderBy('person.nama')
+            ->orderBy('person.nama_lengkap')
             ->first();
     }
 
@@ -111,7 +124,7 @@ final readonly class PersonService
             ->leftJoin('ref_almt_kabupaten', 'ref_almt_kecamatan.id_kabupaten', '=', 'ref_almt_kabupaten.id_kabupaten')
             ->leftJoin('ref_almt_provinsi', 'ref_almt_kabupaten.id_provinsi', '=', 'ref_almt_provinsi.id_provinsi')
             ->select([
-                'person.id_person', 'person.uuid_person', 'person.nama', 'person.jk',
+                'person.id_person', 'person.uuid_person', 'person.nama_lengkap', 'person.jk',
                 'person.tempat_lahir', 'person.tanggal_lahir', 'person.nik', 'person.nomor_kk',
                 'person.npwp', 'person.nomor_hp', 'person.foto', 'person.alamat',
                 'ref_almt_desa.desa', 'ref_almt_kecamatan.kecamatan',
