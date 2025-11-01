@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Person;
+namespace App\Http\Controllers\admin\person;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Person\PersonStoreRequest;
@@ -10,17 +10,17 @@ use App\Services\Tools\ResponseService;
 use App\Services\Tools\TransactionService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
-final class PersonController extends Controller
+
+class PersonController extends Controller
 {
     public function __construct(
-        private readonly PersonService      $personService,
+        private readonly PersonService $personService,
         private readonly TransactionService $transactionService,
-        private readonly ResponseService    $responseService,
+        private readonly ResponseService $responseService,
+
     )
-    {
-    }
+    {}
 
     public function index(): View
     {
@@ -29,21 +29,28 @@ final class PersonController extends Controller
 
     public function list(): JsonResponse
     {
-        return $this->transactionService->handleWithDataTable(
-            fn() => $this->personService->getListData(),
-            [
-                'action' => fn($row) => implode(' ', [
-                    $this->transactionService->actionButton($row->id_person, 'detail'),
-                    $this->transactionService->actionButton($row->id_person, 'edit'),
-                ]),
-            ]
-        );
+        $data = $this->personService->getListData();
+
+        // Tambahkan action untuk setiap row
+        $data->transform(function ($row) {
+            $row->action = implode(' ', [
+                $this->transactionService->actionButton($row->id, 'detail'),
+                $this->transactionService->actionButton($row->id, 'edit'),
+            ]);
+            return $row;
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data berhasil diambil',
+            'data' => $data
+        ]);
     }
 
     public function listApi(): JsonResponse
     {
         return $this->transactionService->handleWithDataTable(
-            fn() => $this->personService->getListData()
+            fn()=> $this->personService->getListData()
         );
     }
 
@@ -57,8 +64,6 @@ final class PersonController extends Controller
                 'nama_panggilan',
                 'tempat_lahir',
                 'tanggal_lahir',
-                'jk',
-                'golongan_darah',
                 'agama',
                 'kewarganegaraan',
                 'email',
@@ -67,9 +72,11 @@ final class PersonController extends Controller
                 'kk',
                 'npwp',
                 'alamat',
+                'id_desa',
+                'jk',
+                'golongan_darah',
                 'rt',
                 'rw',
-                'id_desa',
             ]);
 
             $created = $this->personService->create($payload);
@@ -78,6 +85,7 @@ final class PersonController extends Controller
                 $uploadResult = $this->personService->handleFileUpload($foto);
                 $created->update(['foto' => $uploadResult['file_name']]);
             }
+
 
             return $this->responseService->successResponse('Data berhasil dibuat', $created, 201);
         });
@@ -98,8 +106,6 @@ final class PersonController extends Controller
                 'nama_panggilan',
                 'tempat_lahir',
                 'tanggal_lahir',
-                'jk',
-                'golongan_darah',
                 'agama',
                 'kewarganegaraan',
                 'email',
@@ -108,9 +114,11 @@ final class PersonController extends Controller
                 'kk',
                 'npwp',
                 'alamat',
+                'id_desa',
+                'jk',
+                'golongan_darah',
                 'rt',
                 'rw',
-                'id_desa',
             ]);
 
             $updatedData = $this->personService->update($data, $payload);
@@ -132,4 +140,5 @@ final class PersonController extends Controller
             return $this->responseService->successResponse('Data berhasil diambil', $data);
         });
     }
+
 }

@@ -17,7 +17,7 @@
             $('#id_desa').empty().append('<option value="">-- Pilih Desa/Kelurahan --</option>');
 
             if (provinsiId) {
-                const kabupatenUrl = `{{ route('api.almt.kabupaten', ':id') }}`.replace(':id', provinsiId);
+                const kabupatenUrl = {{ route('api.almt.kabupaten', ':id') }}.replace(':id', provinsiId);
                 fetchDataDropdown(kabupatenUrl, '#id_kabupaten', 'kabupaten', 'kabupaten');
             }
         });
@@ -28,7 +28,7 @@
             $('#id_desa').empty().append('<option value="">-- Pilih Desa/Kelurahan --</option>');
 
             if (kabupatenId) {
-                const kecamatanUrl = `{{ route('api.almt.kecamatan', ':id') }}`.replace(':id', kabupatenId);
+                const kecamatanUrl = {{ route('api.almt.kecamatan', ':id') }}.replace(':id', kabupatenId);
                 fetchDataDropdown(kecamatanUrl, '#id_kecamatan', 'kecamatan', 'kecamatan');
             }
         });
@@ -38,7 +38,7 @@
             $('#id_desa').empty().append('<option value="">-- Pilih Desa/Kelurahan --</option>');
 
             if (kecamatanId) {
-                const desaUrl = `{{ route('api.almt.desa', ':id') }}`.replace(':id', kecamatanId);
+                const desaUrl = {{ route('api.almt.desa', ':id') }}.replace(':id', kecamatanId);
                 fetchDataDropdown(desaUrl, '#id_desa', 'desa', 'desa');
             }
         });
@@ -62,27 +62,26 @@
                     formData.append('nama_panggilan', $('#nama_panggilan').val());
                     formData.append('tempat_lahir', $('#tempat_lahir').val());
                     formData.append('tanggal_lahir', $('#tanggal_lahir').val());
-                    formData.append('jk', $('#jk').val());
                     formData.append('agama', $('#agama').val());
                     formData.append('kewarganegaraan', $('#kewarganegaraan').val());
-                    formData.append('golongan_darah', $('#golongan_darah').val());
                     formData.append('email', $('#email').val());
                     formData.append('no_hp', $('#no_hp').val());
                     formData.append('nik', $('#nik').val());
                     formData.append('kk', $('#kk').val());
                     formData.append('npwp', $('#npwp').val());
                     formData.append('alamat', $('#alamat').val());
+                    formData.append('id_desa', $('#id_desa').val());
+                    formData.append('jk', $('#jk').val());
+                    formData.append('golongan_darah', $('#golongan_darah').val());
                     formData.append('rt', $('#rt').val());
                     formData.append('rw', $('#rw').val());
-                    formData.append('id_desa', $('#id_desa').val());
-                    
 
                     const fileInput = $('#foto')[0];
                     if (fileInput.files[0]) {
                         formData.append('foto', fileInput.files[0]);
                     }
 
-                    const action = "{{ route('admin.person.store') }}";
+                    const action = "{{ route('admin.admin.person.store') }}";
                     DataManager.formData(action, formData).then(response => {
                         if (response.success) {
                             Swal.fire('Success', response.message, 'success');
