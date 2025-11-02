@@ -80,24 +80,26 @@
     <script src="{{ asset('assets/plugins/datatables/print.js') }}"></script>
     <script src="{{ asset('assets/plugins/datatables/responsive.bootstrap.min.js') }}"></script>
     <script>
-        function fetchDataDropdown(url, id, placeholder, name, callback) {
-            DataManager.executeOperations(url, 'admin_' + url, 120).then(response => {
-                $(id).empty().append('<option></option>');
-                if (response.success) {
-                    response.data.forEach(item => {
-                        $(id).append(`<option value="${item['id_' + placeholder]}">${item[name]}</option>`);
-                    });
-                    $(id).select2();
-                    if (callback) {
-                        callback();
+        function fetchDataDropdown(url, id, keyValue, keyText, callback) {
+            $.ajax({
+                url: url,
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    $(id).empty().append('<option value="">-- Pilih --</option>');
+                    if (response.success && response.data.length > 0) {
+                        response.data.forEach(item => {
+                            $(id).append(`<option value="${item[keyValue]}">${item[keyText]}</option>`);
+                        });
                     }
-                } else if (!response.errors) {
-                    Swal.fire('Warning', response.message, 'warning');
+                    if (callback) callback();
+                },
+                error: function() {
+                    $(id).append('<option value="">Gagal memuat data</option>');
                 }
-            }).catch(error => {
-                ErrorHandler.handleError(error);
             });
         }
+
     </script>
     @include('admin.person.script.list')
     @include('admin.person.script.create')

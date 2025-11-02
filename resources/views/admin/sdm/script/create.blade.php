@@ -8,7 +8,10 @@
             altInput: true,
         });
 
-        fetchDataDropdown("{{ route('api.almt.provinsi') }}", "#id_provinsi", "provinsi", "provinsi");
+        fetchDataDropdown("{{ route('api.almt.provinsi') }}", "#id_provinsi", "id_provinsi", "provinsi");
+        const kabupatenUrl = `{{ route('api.almt.kabupaten', ':id') }}`.replace(':id', provinsiId);
+        fetchDataDropdown(kabupatenUrl, '#id_kabupaten', 'id_kabupaten', 'kabupaten');
+
 
         $('#id_provinsi').off('change').on('change', function () {
             const provinsiId = $(this).val();

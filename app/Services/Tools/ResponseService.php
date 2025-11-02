@@ -9,6 +9,7 @@ final class ResponseService
     public function errorResponse(string $message, int $statusCode = 400): JsonResponse
     {
         return response()->json(['success' => false, 'message' => $message], $statusCode);
+        
     }
 
     public function successResponse(string $message, $data = null, int $statusCode = 200): JsonResponse
