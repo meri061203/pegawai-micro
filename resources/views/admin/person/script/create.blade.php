@@ -113,6 +113,7 @@
                     formData.append('kewarganegaraan', $('#kewarganegaraan').val());
                     formData.append('golongan_darah', $('#golongan_darah').val());
                     formData.append('nik', $('#nik').val());
+                    formData.append('agama', $('#agama').val());
                     formData.append('kk', $('#kk').val());
                     formData.append('alamat', $('#alamat').val());
                     formData.append('rt', $('#rt').val());

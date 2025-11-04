@@ -1,188 +1,195 @@
-<div class="modal fade" id="form_detail" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog"
-     aria-hidden="true">
-    <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Detail Person</h5>
-                <a type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></a>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <!-- Kolom 1: Foto -->
-                    <div class="col-md-3">
-                        <div class="d-flex flex-column align-items-center mb-4">
-                            <h6 class="text-primary fw-bold mb-3">Foto Profil</h6>
-                            <div id="detail_foto_section" class="text-center">
-                                <div class="symbol symbol-150px symbol-fixed position-relative rounded border">
-                                    <img id="detail_foto_preview"
-                                         alt="Foto Person" class="w-150px h-150px object-fit-cover rounded"/>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+<script defer>
+$('#form_edit').on('show.bs.modal', function (e) {
+    const button = $(e.relatedTarget);
+    const id = button.data("id");
+    const detail = '{{ route('admin.admin.person.show', [':id']) }}';
 
-                    <!-- Kolom 2: Data Dasar -->
-                    <div class="col-md-4">
-                        <h6 class="text-primary fw-bold mb-3 border-bottom border-primary pb-2">Data Dasar</h6>
+    // ✅ AMAN: inisialisasi flatpickr dan simpan instance
+    let edit_tanggal_lahir = $('#edit_tanggal_lahir').flatpickr({
+        dateFormat: 'Y-m-d',
+        altFormat: 'd/m/Y',
+        allowInput: false,
+        altInput: true,
+    });
 
-                        <div class="d-flex flex-column mb-3">
-                            <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                <span>NIP</span>
-                            </label>
-                            <p id="detail_nip" class="fw-light fs-sm-8 fs-lg-6"></p>
-                        </div>
+    DataManager.fetchData(detail.replace(':id', id))
+        .then(function (response) {
+            if (response.success) {
+                // ✅ AMAN: pakai selector yang benar sesuai modal edit
+                $('#edit_nama_lengkap').val(response.data.nama_lengkap);
+                $('#edit_nama_panggilan').val(response.data.nama_panggilan);
+                $('#edit_tempat_lahir').val(response.data.tempat_lahir);
 
-                        <div class="d-flex flex-column mb-3">
-                            <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                <span>Status Pegawai</span>
-                            </label>
-                            <p id="detail_status_pegawai" class="fw-light fs-sm-8 fs-lg-6"></p>
-                        </div>
+                // ✅ AMAN: gunakan instance flatpickr untuk setDate
+                edit_tanggal_lahir.setDate(response.data.tanggal_lahir);
 
-                        <div class="d-flex flex-column mb-3">
-                            <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                <span>Tipe Pegawai</span>
-                            </label>
-                            <p id="detail_tipe_pegawai" class="fw-light fs-sm-8 fs-lg-6"></p>
-                        </div>
+                $('#edit_agama').val(response.data.agama);
+                $('#edit_kewarganegaraan').val(response.data.kewarganegaraan);
+                $('#edit_email').val(response.data.email);
+                $('#edit_no_hp').val(response.data.no_hp);
+                $('#edit_nik').val(response.data.nik);
+                $('#edit_kk').val(response.data.kk);
+                $('#edit_npwp').val(response.data.npwp);
+                $('#edit_alamat').val(response.data.alamat);
+                $('#edit_jk').val(response.data.jk).trigger('change');
+                $('#edit_golongan_darah').val(response.data.golongan_darah).trigger('change');
+                $('#edit_rt').val(response.data.rt);
+                $('#edit_rw').val(response.data.rw);
 
-                        <div class="d-flex flex-column mb-3">
-                            <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                <span>Tanggal Masuk</span>
-                            </label>
-                            <p id="detail_tanggal_masuk" class="fw-light fs-sm-8 fs-lg-6"></p>
-                        </div>
+                // ✅ AMAN: foto preview
+                if (response.data.foto) {
+                    const photoUrl = '{{ route('admin.view-file', [':folder', ':filename']) }}'
+                        .replace(':folder', 'person')
+                        .replace(':filename', response.data.foto);
+                    $('#edit_image_preview').css({
+                        'background-image': url('${photoUrl}'),
+                        'background-size': 'cover',
+                        'background-position': 'center'
+                    });
+                } else {
+                    $('#edit_image_preview').css({
+                        'background-image': '',
+                        'background-size': 'contain',
+                        'background-position': 'center'
+                    });
+                }
 
-                         <div class="d-flex flex-column mb-3">
-                            <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                <span>Jenis Kelamin</span>
-                            </label>
-                            <p id="detail_jk" class="fw-light fs-sm-8 fs-lg-6"></p>
-                        </div>
+                // ✅ AMAN: isi dropdown provinsi/kabupaten/kecamatan/desa
+                fetchDataDropdown('{{ route('api.almt.provinsi') }}', '#edit_id_provinsi', 'provinsi', 'provinsi', () => {
+                    $('#edit_id_provinsi option').each(function () {
+                        if ($(this).text() === response.data.provinsi) {
+                            $('#edit_id_provinsi').val($(this).val()).trigger('change');
 
-                         <div class="d-flex flex-column mb-3">
-                            <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                <span>Agama</span>
-                            </label>
-                            <p id="detail_agama" class="fw-light fs-sm-8 fs-lg-6"></p>
-                        </div>
+                            setTimeout(() => {
+                                $('#edit_id_kabupaten option').each(function () {
+                                    if ($(this).text() === response.data.kabupaten) {
+                                        $('#edit_id_kabupaten').val($(this).val()).trigger('change');
 
-                        <div class="d-flex flex-column mb-3">
-                            <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                <span>Kewarganegaraan</span>
-                            </label>
-                            <p id="detail_kewarganegaraan" class="fw-light fs-sm-8 fs-lg-6"></p>
-                        </div>
+                                        setTimeout(() => {
+                                            $('#edit_id_kecamatan option').each(function () {
+                                                if ($(this).text() === response.data.kecamatan) {
+                                                    $('#edit_id_kecamatan').val($(this).val()).trigger('change');
 
-                        <div class="d-flex flex-column mb-3">
-                            <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                <span>Golongan Darah</span>
-                            </label>
-                            <p id="detail_golongan_darah" class="fw-light fs-sm-8 fs-lg-6"></p>
-                        </div>
+                                                    setTimeout(() => {
+                                                        $('#edit_id_desa option').each(function () {
+                                                            if ($(this).text() === response.data.desa) {
+                                                                $('#edit_id_desa').val($(this).val()).trigger('change');
+                                                                return false;
+                                                            }
+                                                        });
+                                                    }, 500);
+                                                    return false;
+                                                }
+                                            });
+                                        }, 500);
+                                        return false;
+                                    }
+                                });
+                            }, 500);
+                            return false;
+                        }
+                    });
+                });
 
-                         <div class="d-flex flex-column mb-3">
-                            <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                <span>Email</span>
-                            </label>
-                            <p id="detail_email" class="fw-light fs-sm-8 fs-lg-6"></p>
-                        </div>
+            } else {
+                Swal.fire('Warning', response.message, 'warning');
+            }
+        }).catch(function (error) {
+            ErrorHandler.handleError(error);
+        });
 
-                        <div class="d-flex flex-column mb-3">
-                            <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                <span>Nomor HP</span>
-                            </label>
-                            <p id="detail_no_hp" class="fw-light fs-sm-8 fs-lg-6"></p>
-                        </div>
+    // ✅ AMAN: update dependent dropdown
+    $('#edit_id_provinsi').off('change.edit').on('change.edit', function () {
+        const provinsiId = $(this).val();
+        $('#edit_id_kabupaten, #edit_id_kecamatan, #edit_id_desa').empty().append('<option value="">-- Pilih --</option>');
+        if (provinsiId) {
+            const kabupatenUrl = {{ route('api.almt.kabupaten', ':id') }}.replace(':id', provinsiId);
+            fetchDataDropdown(kabupatenUrl, '#edit_id_kabupaten', 'kabupaten', 'kabupaten');
+        }
+    });
 
-                        <div class="d-flex flex-column mb-3">
-                            <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                <span>NIK</span>
-                            </label>
-                            <p id="detail_nik" class="fw-light fs-sm-8 fs-lg-6"></p>
-                        </div>
+    $('#edit_id_kabupaten').off('change.edit').on('change.edit', function () {
+        const kabupatenId = $(this).val();
+        $('#edit_id_kecamatan, #edit_id_desa').empty().append('<option value="">-- Pilih --</option>');
+        if (kabupatenId) {
+            const kecamatanUrl = {{ route('api.almt.kecamatan', ':id') }}.replace(':id', kabupatenId);
+            fetchDataDropdown(kecamatanUrl, '#edit_id_kecamatan', 'kecamatan', 'kecamatan');
+        }
+    });
 
-                        <div class="d-flex flex-column mb-3">
-                            <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                <span>Nomor KK</span>
-                            </label>
-                            <p id="detail_kk" class="fw-light fs-sm-8 fs-lg-6"></p>
-                        </div>
+    $('#edit_id_kecamatan').off('change.edit').on('change.edit', function () {
+        const kecamatanId = $(this).val();
+        $('#edit_id_desa').empty().append('<option value="">-- Pilih --</option>');
+        if (kecamatanId) {
+            const desaUrl = {{ route('api.almt.desa', ':id') }}.replace(':id', kecamatanId);
+            fetchDataDropdown(desaUrl, '#edit_id_desa', 'desa', 'desa');
+        }
+    });
 
-                        <div class="d-flex flex-column mb-3">
-                            <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                <span>NPWP</span>
-                            </label>
-                            <p id="detail_npwp" class="fw-light fs-sm-8 fs-lg-6"></p>
-                        </div>
+    // ✅ AMAN: submit form edit, gunakan selector modal edit
+    $('#bt_submit_edit').off('submit').on('submit', function (e) {
+        e.preventDefault();
+        Swal.fire({
+            title: 'Kamu yakin?',
+            text: 'Apakah datanya benar dan apa yang anda inginkan?',
+            icon: 'warning',
+            confirmButtonColor: '#3085d6',
+            allowOutsideClick: false, allowEscapeKey: false,
+            showCancelButton: true,
+            cancelButtonColor: '#dd3333',
+            confirmButtonText: 'Ya, Simpan', cancelButtonText: 'Batal', focusCancel: true,
+        }).then((result) => {
+            if (result.value) {
+                DataManager.openLoading();
+                const formData = new FormData();
 
-                    </div>
+                // ✅ AMAN: gunakan selector modal edit yang benar
+                formData.append('nama_lengkap', $('#edit_nama_lengkap').val());
+                formData.append('nama_panggilan', $('#edit_nama_panggilan').val());
+                formData.append('tempat_lahir', $('#edit_tempat_lahir').val());
+                formData.append('tanggal_lahir', $('#edit_tanggal_lahir').val());
+                formData.append('agama', $('#edit_agama').val());
+                formData.append('kewarganegaraan', $('#edit_kewarganegaraan').val());
+                formData.append('email', $('#edit_email').val());
+                formData.append('no_hp', $('#edit_no_hp').val());
+                formData.append('nik', $('#edit_nik').val());
+                formData.append('kk', $('#edit_kk').val());
+                formData.append('npwp', $('#edit_npwp').val());
+                formData.append('alamat', $('#edit_alamat').val());
+                formData.append('id_desa', $('#edit_id_desa').val());
+                formData.append('jk', $('#edit_jk').val());
+                formData.append('golongan_darah', $('#edit_golongan_darah').val());
+                formData.append('rt', $('#edit_rt').val());
+                formData.append('rw', $('#edit_rw').val());
 
-                    <!-- Kolom 3: Alamat -->
-                    <div class="col-md-5">
-                        <h6 class="text-primary fw-bold mb-3 border-bottom border-primary pb-2">Alamat</h6>
+                const fileInput = $('#edit_foto')[0];
+                if (fileInput.files[0]) {
+                    formData.append('foto', fileInput.files[0]);
+                }
 
-                        <div class="d-flex flex-column mb-3">
-                            <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                <span>Alamat</span>
-                            </label>
-                            <p id="detail_alamat" class="fw-light fs-sm-8 fs-lg-6" style="min-height: 60px;"></p>
-                        </div>
+                const update = '{{ route('admin.admin.person.update', [':id']) }}';
+                DataManager.formData(update.replace(':id', id), formData).then(response => {
+                    if (response.success) {
+                        Swal.fire('Success', response.message, 'success');
+                        setTimeout(() => { location.reload(); }, 1000);
+                    } else if (response.errors) {
+                        new ValidationErrorFilter('edit_').filterValidationErrors(response);
+                        Swal.fire('Peringatan', 'Isian Anda belum lengkap atau tidak valid.', 'warning');
+                    } else {
+                        Swal.fire('Warning', response.message, 'warning');
+                    }
+                }).catch(error => {
+                    ErrorHandler.handleError(error);
+                });
+            }
+        });
+    });
 
-                        <div class="row mb-3">
-                            <div class="col-6">
-                                <div class="d-flex flex-column mb-3">
-                                    <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                        <span>RT</span>
-                                    </label>
-                                    <p id="detail_rt" class="fw-light fs-sm-8 fs-lg-6"></p>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="d-flex flex-column mb-3">
-                                    <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                        <span>RW</span>
-                                    </label>
-                                    <p id="detail_rw" class="fw-light fs-sm-8 fs-lg-6"></p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="d-flex flex-column mb-3">
-                            <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                <span>Provinsi</span>
-                            </label>
-                            <p id="detail_provinsi" class="fw-light fs-sm-8 fs-lg-6"></p>
-                        </div>
-
-                        <div class="d-flex flex-column mb-3">
-                            <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                <span>Kabupaten/Kota</span>
-                            </label>
-                            <p id="detail_kabupaten" class="fw-light fs-sm-8 fs-lg-6"></p>
-                        </div>
-
-                        <div class="d-flex flex-column mb-3">
-                            <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                <span>Kecamatan</span>
-                            </label>
-                            <p id="detail_kecamatan" class="fw-light fs-sm-8 fs-lg-6"></p>
-                        </div>
-
-                        <div class="d-flex flex-column mb-3">
-                            <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                <span>Desa/Kelurahan</span>
-                            </label>
-                            <p id="detail_desa" class="fw-light fs-sm-8 fs-lg-6"></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-dark fs-sm-8 fs-lg-6" data-bs-dismiss="modal"
-                        aria-label="Close">Tutup
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
+}).on('hidden.bs.modal', function () {
+    const $m = $(this);
+    $m.find('form').trigger('reset');
+    $m.find('select, textarea').val('').trigger('change');
+    $m.find('.is-invalid, .is-valid').removeClass('is-invalid is-valid');
+    $m.find('.invalid-feedback, .valid-feedback, .text-danger').remove();
+});
+</script>

@@ -6,6 +6,8 @@ use Rap2hpoutre\LaravelLogViewer\LogViewerController;
 
 Route::get('/', [PortalController::class, 'login'])->name('index');
 Route::post('/login', [PortalController::class, 'logindb'])->name('logindb');
+Route::post('log-error', [PortalController::class, 'error'])->name('log-error');
+
 
 
 
