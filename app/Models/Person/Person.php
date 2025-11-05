@@ -24,51 +24,42 @@ final class Person extends Model implements Auditable
 
     protected $table = 'person';
 
-    protected $primaryKey = 'id_person';
+    protected $primaryKey = 'id';
 
     protected $keyType = 'int';
 
     protected $dateFormat = 'Y-m-d';
 
     protected $fillable = [
-        'nama',
+        'nama_lengkap',
+        'nama_panggilan',
         'jk',
         'tempat_lahir',
         'tanggal_lahir',
+        'agama',
         'kewarganegaraan',
         'golongan_darah',
         'nik',
-        'nomor_kk',
+        'kk',
         'alamat',
         'rt',
         'rw',
         'id_desa',
         'npwp',
-        'nomor_hp',
+        'no_hp',
         'email',
         'foto',
     ];
 
     protected $guarded = [
-        'id_person',
+        'id',
     ];
 
     protected $casts = [
-        'id_person' => 'integer',
+        'id' => 'integer',
         'id_desa' => 'integer',
         'tanggal_lahir' => 'date',
     ];
-
-    protected static function boot(): void
-    {
-        parent::boot();
-
-        Person::creating(function ($model) {
-            if (empty($model->uuid_person)) {
-                $model->uuid_person = (string)Str::uuid();
-            }
-        });
-    }
 
     public function setNamaLengkapAttribute($value): void
     {
@@ -77,7 +68,7 @@ final class Person extends Model implements Auditable
 
     public function setNamaPanggilanAttribute($value): void
     {
-        $this->attributes['nama_Panggilan'] = strtoupper(trim(strip_tags($value)));
+        $this->attributes['nama_panggilan'] = strtoupper(trim(strip_tags($value)));
     }
 
     public function setAgamaAttribute($value): void

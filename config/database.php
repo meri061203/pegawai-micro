@@ -62,7 +62,7 @@ return [
             'url' => '',
             'host' => env('DB1_HOST', '127.0.0.1'),
             'port' => env('DB1_PORT', '3306'),
-            'database' => env('DB1_DATABASE', 'laravel'),
+            'database' => env('DB1_DATABASE', 'micro_pegawai_log'),
             'username' => env('DB1_USERNAME', 'root'),
             'password' => env('DB1_PASSWORD', ''),
             'unix_socket' => '',

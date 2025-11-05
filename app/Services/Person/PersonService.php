@@ -17,7 +17,7 @@ final readonly class PersonService
     public function getListData(): Collection
     {
         return Person::select([
-            'id_person',
+            'id',
             'nama_lengkap',
             'nama_panggilan',
             'jk',
@@ -33,7 +33,7 @@ final readonly class PersonService
             'foto',
             'alamat',
             'id_desa'
-        ])->orderBy('nama')->get();
+        ])->orderBy('nama_lengkap')->get();
     }
 
     public function create(array $data): Person
@@ -58,7 +58,7 @@ final readonly class PersonService
                 'ref_almt_provinsi.id_provinsi',
                 'ref_almt_provinsi.provinsi',
             ])
-            ->where('person.id_person', $id)
+            ->where('person.id', $id)
             ->first();
     }
 
@@ -95,7 +95,7 @@ final readonly class PersonService
             ->leftJoin('ref_almt_kabupaten', 'ref_almt_kecamatan.id_kabupaten', '=', 'ref_almt_kabupaten.id_kabupaten')
             ->leftJoin('ref_almt_provinsi', 'ref_almt_kabupaten.id_provinsi', '=', 'ref_almt_provinsi.id_provinsi')
             ->select([
-                'person.id_person',
+                'person.id',
                 'person.nik',
                 'person.nama_lengkap',
                 'person.tempat_lahir',
@@ -118,13 +118,13 @@ final readonly class PersonService
             ->leftJoin('ref_almt_kabupaten', 'ref_almt_kecamatan.id_kabupaten', '=', 'ref_almt_kabupaten.id_kabupaten')
             ->leftJoin('ref_almt_provinsi', 'ref_almt_kabupaten.id_provinsi', '=', 'ref_almt_provinsi.id_provinsi')
             ->select([
-                'person.id_person', 'person.uuid_person', 'person.nama', 'person.jk',
+                'person.id', 'person.uuid', 'person.nama', 'person.jk',
                 'person.tempat_lahir', 'person.tanggal_lahir', 'person.nik', 'person.nomor_kk',
                 'person.npwp', 'person.nomor_hp', 'person.foto', 'person.alamat',
                 'ref_almt_desa.desa', 'ref_almt_kecamatan.kecamatan',
                 'ref_almt_kabupaten.kabupaten', 'ref_almt_provinsi.provinsi',
             ])
-            ->where('person.uuid_person', $uuid)
+            ->where('person.uuid', $uuid)
             ->first();
     }
 }

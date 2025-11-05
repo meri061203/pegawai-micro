@@ -45,6 +45,7 @@ class PersonStoreRequest extends FormRequest
             'jk' => 'Jenis Kelamin',
             'tempat_lahir' => 'Tempat Lahir',
             'tanggal_lahir' => 'Tanggal Lahir',
+            'agama' => 'Agama',
             'kewarganegaraan' => 'Kewarganegaraan',
             'golongan_darah' => 'Golongan Darah',
             'nik' => 'NIK',
