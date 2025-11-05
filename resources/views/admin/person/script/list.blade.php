@@ -35,7 +35,7 @@
             responsive: true,
             searchHighlight: true,
             ajax: {
-                url: '{{ route('admin.admin.person.list') }}',
+                url: '{{ route('admin.person.list') }}',
                 cache: false,
             },
             order: [],
@@ -49,6 +49,10 @@
                 {
                     data: 'nama_lengkap',
                     name: 'nama_lengkap'
+                },
+                 {
+                    data: 'nama_panggilan',
+                    name: 'nama_panggilan'
                 },
                 {
                     data: 'jk',

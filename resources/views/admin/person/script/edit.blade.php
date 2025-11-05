@@ -3,7 +3,7 @@
         // Don't reset here - let global cleaner handle it
         const button = $(e.relatedTarget);
         const id = button.data("id");
-        const detail = '{{ route('admin.admin.person.show', [':id']) }}';
+        const detail = '{{ route('admin.person.show', [':id']) }}';
 
         let edit_tanggal_lahir = $('#edit_tanggal_lahir').flatpickr({
             dateFormat: 'Y-m-d',
@@ -16,12 +16,12 @@
             .then(function (response) {
                 if (response.success) {
                     $('#edit_nama_lengkap').val(response.data.nama_lengkap);
-                    $('#edit_nama_panggilan').val(response.data.nama_panggilan);
+                    $('#edit_nama_panggilan').text(response.data.nama_panggilan);
                     $('#edit_jk').val(response.data.jk).trigger('change');
                     $('#edit_tempat_lahir').val(response.data.tempat_lahir);
                     edit_tanggal_lahir.setDate(response.data.tanggal_lahir);
                     $('#edit_nik').val(response.data.nik);
-                    $('#edit_agama').val(response.data.agama);
+                    $('#edit_agama').text(response.data.agama);
                     $('#edit_kk').val(response.data.kk);
                     $('#edit_alamat').val(response.data.alamat);
                     $('#edit_rt').val(response.data.rt);
@@ -46,43 +46,17 @@
                         $('#edit_image_preview').css('background-position', 'center');
                     }
                     fetchDataDropdown('{{ route('api.almt.provinsi') }}', '#edit_id_provinsi', 'provinsi', 'provinsi', () => {
-                        const provinsiOptions = $('#edit_id_provinsi option');
-                        provinsiOptions.each(function () {
-                            if ($(this).text() === response.data.provinsi) {
-                                $('#edit_id_provinsi').val($(this).val()).trigger('change');
-
-                                setTimeout(() => {
-                                    const kabupatenOptions = $('#edit_id_kabupaten option');
-                                    kabupatenOptions.each(function () {
-                                        if ($(this).text() === response.data.kabupaten) {
-                                            $('#edit_id_kabupaten').val($(this).val()).trigger('change');
-
-                                            setTimeout(() => {
-                                                const kecamatanOptions = $('#edit_id_kecamatan option');
-                                                kecamatanOptions.each(function () {
-                                                    if ($(this).text() === response.data.kecamatan) {
-                                                        $('#edit_id_kecamatan').val($(this).val()).trigger('change');
-
-                                                        setTimeout(() => {
-                                                            const desaOptions = $('#edit_id_desa option');
-                                                            desaOptions.each(function () {
-                                                                if ($(this).text() === response.data.desa) {
-                                                                    $('#edit_id_desa').val($(this).val()).trigger('change');
-                                                                    return false;
-                                                                }
-                                                            });
-                                                        }, 1000);
-                                                        return false;
-                                                    }
-                                                });
-                                            }, 1000);
-                                            return false;
-                                        }
+                        $('#edit_id_provinsi').val(response.data.id_provinsi).trigger('change');
+                        fetchDataDropdown(`{{ route('api.almt.kabupaten', ':id') }}`.replace(':id', response.data.id_provinsi), '#edit_id_kabupaten', 'kabupaten', 'kabupaten', () => {
+                            $('#edit_id_kabupaten').val(response.data.id_kabupaten).trigger('change');
+                             fetchDataDropdown(`{{ route('api.almt.kecamatan', ':id') }}`.replace(':id', response.data.id_kabupaten),'#edit_id_kecamatan', 'kecamatan', 'kecamatan', () => {
+                                    $('#edit_id_kecamatan').val(response.data.id_kecamatan).trigger('change');
+                                    fetchDataDropdown(`{{ route('api.almt.desa', ':id') }}`.replace(':id', response.data.id_kecamatan),'#edit_id_desa', 'desa', 'desa', () => {
+                                            $('#edit_id_desa').val(response.data.id_desa).trigger('change');
                                     });
-                                }, 1000);
-                                return false;
-                            }
-                        });
+                                });
+                         });
+
                     });
                 } else {
                     Swal.fire('Warning', response.message, 'warning');
@@ -162,7 +136,7 @@
                         formData.append('foto', fileInput.files[0]);
                     }
 
-                    const update = '{{ route('admin.admin.person.update', [':id']) }}';
+                    const update = '{{ route('admin.person.update', [':id']) }}';
                     DataManager.formData(update.replace(':id', id), formData).then(response => {
                         if (response.success) {
                             Swal.fire('Success', response.message, 'success');

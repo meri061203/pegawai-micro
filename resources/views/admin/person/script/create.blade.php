@@ -1,96 +1,49 @@
 <script defer>
-(function() {
-    // Generic fetch untuk mengisi select.
-    // keyValue = e.g. "id_provinsi", keyText = e.g. "provinsi"
-    function fetchDataDropdown(url, selector, keyValue, keyText, placeholderText = '-- Pilih --', callback) {
-        const $sel = $(selector);
-        $sel.empty().append(`<option value="">${placeholderText}</option>`);
+    $('#form_create').on('show.bs.modal', function (e) {
 
-        $.ajax({
-            url: url,
-            type: 'GET',
-            dataType: 'json',
-        }).done(function(response) {
-            if (response && response.success && Array.isArray(response.data)) {
-                response.data.forEach(item => {
-                    const val = item[keyValue] ?? item[keyValue.toLowerCase()] ?? '';
-                    const text = item[keyText] ?? item[keyText.toLowerCase()] ?? '';
-                    $sel.append(`<option value="${val}">${text}</option>`);
-                });
-            }
-            // init/select2 safe
-            if ($.fn.select2) {
-                if (!$sel.hasClass('select2-hidden-accessible')) {
-                    $sel.select2({ width: '100%', placeholder: placeholderText, allowClear: true });
-                } else {
-                    $sel.trigger('change.select2');
-                }
-            }
-
-            if (typeof callback === 'function') callback();
-        }).fail(function(xhr) {
-            console.error('fetchDataDropdown error:', xhr.responseText || xhr.statusText);
-            $sel.empty().append(`<option value="">Gagal memuat data</option>`);
+        $('#tanggal_lahir').flatpickr({
+            dateFormat: 'Y-m-d',
+            altFormat: 'd/m/Y',
+            allowInput: false,
+            altInput: true,
         });
-    }
 
-    // bind handler sekali
-    $('#form_create').off('show.bs.modal').on('show.bs.modal', function () {
-        // jika elemen tanggal_lahir ada -> inisialisasi
-        if ($('#tanggal_lahir').length && typeof flatpickr === 'function') {
-            $('#tanggal_lahir').flatpickr({
-                dateFormat: 'Y-m-d',
-                altFormat: 'd/m/Y',
-                allowInput: false,
-                altInput: true,
-            });
-        }
+        fetchDataDropdown("{{ route('api.almt.provinsi') }}", "#id_provinsi", "provinsi", "provinsi");
 
-        // isi provinsi saat modal dibuka
-        fetchDataDropdown("{{ route('api.almt.provinsi') }}", "#id_provinsi", "id_provinsi", "provinsi", "Pilih Provinsi");
+        $('#id_provinsi').off('change').on('change', function () {
+            const provinsiId = $(this).val();
+            $('#id_kabupaten').empty().append('<option value="">-- Pilih Kabupaten/Kota --</option>');
+            $('#id_kecamatan').empty().append('<option value="">-- Pilih Kecamatan --</option>');
+            $('#id_desa').empty().append('<option value="">-- Pilih Desa/Kelurahan --</option>');
 
-        // kosongkan downstream selects (default)
-        $('#id_kabupaten').empty().append('<option value="">-- Pilih Kabupaten/Kota --</option>');
-        $('#id_kecamatan').empty().append('<option value="">-- Pilih Kecamatan --</option>');
-        $('#id_desa').empty().append('<option value="">-- Pilih Desa/Kelurahan --</option>');
-    });
+            if (provinsiId) {
+                const kabupatenUrl = `{{ route('api.almt.kabupaten', ':id') }}`.replace(':id', provinsiId);
+                fetchDataDropdown(kabupatenUrl, '#id_kabupaten', 'kabupaten', 'kabupaten');
+            }
+        });
 
-    // change handlers: buat URL dan fetch *di dalam* handler (saat nilai ada)
-    $('#id_provinsi').off('change').on('change', function () {
-        const provinsiId = $(this).val();
-        $('#id_kabupaten').empty().append('<option value="">-- Pilih Kabupaten/Kota --</option>');
-        $('#id_kecamatan').empty().append('<option value="">-- Pilih Kecamatan --</option>');
-        $('#id_desa').empty().append('<option value="">-- Pilih Desa/Kelurahan --</option>');
+        $('#id_kabupaten').off('change').on('change', function () {
+            const kabupatenId = $(this).val();
+            $('#id_kecamatan').empty().append('<option value="">-- Pilih Kecamatan --</option>');
+            $('#id_desa').empty().append('<option value="">-- Pilih Desa/Kelurahan --</option>');
 
-        if (provinsiId) {
-            const kabupatenUrl = `{{ route('api.almt.kabupaten', ':id') }}`.replace(':id', provinsiId);
-            fetchDataDropdown(kabupatenUrl, '#id_kabupaten', 'id_kabupaten', 'kabupaten', 'Pilih Kabupaten/Kota');
-        }
-    });
+            if (kabupatenId) {
+                const kecamatanUrl = `{{ route('api.almt.kecamatan', ':id') }}`.replace(':id', kabupatenId);
+                fetchDataDropdown(kecamatanUrl, '#id_kecamatan', 'kecamatan', 'kecamatan');
+            }
+        });
 
-    $('#id_kabupaten').off('change').on('change', function () {
-        const kabupatenId = $(this).val();
-        $('#id_kecamatan').empty().append('<option value="">-- Pilih Kecamatan --</option>');
-        $('#id_desa').empty().append('<option value="">-- Pilih Desa/Kelurahan --</option>');
+        $('#id_kecamatan').off('change').on('change', function () {
+            const kecamatanId = $(this).val();
+            $('#id_desa').empty().append('<option value="">-- Pilih Desa/Kelurahan --</option>');
 
-        if (kabupatenId) {
-            const kecamatanUrl = `{{ route('api.almt.kecamatan', ':id') }}`.replace(':id', kabupatenId);
-            fetchDataDropdown(kecamatanUrl, '#id_kecamatan', 'id_kecamatan', 'kecamatan', 'Pilih Kecamatan');
-        }
-    });
+            if (kecamatanId) {
+                const desaUrl = `{{ route('api.almt.desa', ':id') }}`.replace(':id', kecamatanId);
+                fetchDataDropdown(desaUrl, '#id_desa', 'desa', 'desa');
+            }
+        });
 
-    $('#id_kecamatan').off('change').on('change', function () {
-        const kecamatanId = $(this).val();
-        $('#id_desa').empty().append('<option value="">-- Pilih Desa/Kelurahan --</option>');
-
-        if (kecamatanId) {
-            const desaUrl = `{{ route('api.almt.desa', ':id') }}`.replace(':id', kecamatanId);
-            fetchDataDropdown(desaUrl, '#id_desa', 'id_desa', 'desa', 'Pilih Desa/Kelurahan');
-        }
-    });
-
-    // submit handler tetap seperti biasa — pastikan id form sesuai
-    $('#bt_submit_create').off('submit').on('submit', function (e) {
+        $('#bt_submit_create').off('submit').on('submit', function (e) {
             e.preventDefault();
             Swal.fire({
                 title: 'Kamu yakin?',
@@ -106,7 +59,7 @@
                     DataManager.openLoading();
                     const formData = new FormData();
                     formData.append('nama_lengkap', $('#nama_lengkap').val());
-                    formData.append('nama_panggilan', $('#nama_panggilan').val());
+                     formData.append('nama_panggilan', $('#nama_panggilan').val());
                     formData.append('jk', $('#jk').val());
                     formData.append('tempat_lahir', $('#tempat_lahir').val());
                     formData.append('tanggal_lahir', $('#tanggal_lahir').val());
@@ -128,7 +81,7 @@
                         formData.append('foto', fileInput.files[0]);
                     }
 
-                    const action = "{{ route('admin.admin.person.store') }}";
+                    const action = "{{ route('admin.person.store') }}";
                     DataManager.formData(action, formData).then(response => {
                         if (response.success) {
                             Swal.fire('Success', response.message, 'success');
@@ -152,19 +105,11 @@
                 }
             })
         });
-
-    // Bersihkan modal saat ditutup
-    $('#form_create').off('hidden.bs.modal').on('hidden.bs.modal', function () {
+    }).on('hidden.bs.modal', function () {
         const $m = $(this);
         $m.find('form').trigger('reset');
         $m.find('select, textarea').val('').trigger('change');
         $m.find('.is-invalid, .is-valid').removeClass('is-invalid is-valid');
         $m.find('.invalid-feedback, .valid-feedback, .text-danger').remove();
     });
-
-    // optional: tangkap error global untuk debugging
-    window.addEventListener('error', function (evt) {
-        console.error('Global error:', evt.message, 'at', evt.filename + ':' + evt.lineno);
-    });
-})();
 </script>

@@ -45,11 +45,11 @@
                                 <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0 fs-sm-8 fs-lg-6">
                                     <th class="min-w-75px ps-5">Aksi</th>
                                     <th class="min-w-150px">Nama Lengkap</th>
-                                    <th class="min-w-60px">Nama Panggilan</th>
+                                    <th class="min-w-60px">JK</th>
                                     <th class="min-w-120px">Tempat Lahir</th>
                                     <th class="min-w-100px">Tanggal Lahir</th>
                                     <th class="min-w-120px">NIK</th>
-                                    <th class="min-w-100px">No_HP</th>
+                                    <th class="min-w-100px">No. HP</th>
                                     <th class="min-w-100px">Email</th>
                                 </tr>
                                 </thead>
@@ -82,23 +82,22 @@
     <script src="{{ asset('assets/plugins/datatables/print.js') }}"></script>
     <script src="{{ asset('assets/plugins/datatables/responsive.bootstrap.min.js') }}"></script>
     <script>
-        function fetchDataDropdown(url, id, keyValue, keyText, callback) {
-            $.ajax({
-                url: url,
-                type: 'GET',
-                dataType: 'json',
-                success: function(response) {
-                    $(id).empty().append('<option value="">-- Pilih --</option>');
-                    if (response.success && response.data.length > 0) {
-                        response.data.forEach(item => {
-                            $(id).append(`<option value="${item[keyValue]}">${item[keyText]}</option>`);
-                        });
+        function fetchDataDropdown(url, id, placeholder, name, callback) {
+            DataManager.executeOperations(url, 'admin_' + url, 120).then(response => {
+                $(id).empty().append('<option></option>');
+                if (response.success) {
+                    response.data.forEach(item => {
+                        $(id).append(`<option value="${item['id_' + placeholder]}">${item[name]}</option>`);
+                    });
+                    $(id).select2();
+                    if (callback) {
+                        callback();
                     }
-                    if (callback) callback();
-                },
-                error: function() {
-                    $(id).append('<option value="">Gagal memuat data</option>');
+                } else if (!response.errors) {
+                    Swal.fire('Warning', response.message, 'warning');
                 }
+            }).catch(error => {
+                ErrorHandler.handleError(error);
             });
         }
     </script>
