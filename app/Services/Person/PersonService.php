@@ -34,6 +34,7 @@ final readonly class PersonService
             'alamat',
             'id_desa'
         ])->orderBy('nama_lengkap')->get();
+
     }
 
     public function create(array $data): Person

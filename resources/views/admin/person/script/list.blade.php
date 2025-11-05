@@ -50,10 +50,6 @@
                     data: 'nama_lengkap',
                     name: 'nama_lengkap'
                 },
-                 {
-                    data: 'nama_panggilan',
-                    name: 'nama_panggilan'
-                },
                 {
                     data: 'jk',
                     name: 'jk',
