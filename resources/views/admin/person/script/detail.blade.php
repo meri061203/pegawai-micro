@@ -27,6 +27,9 @@
                     $('#detail_provinsi').text(response.data.provinsi);
                     $('#detail_kabupaten').text(response.data.kabupaten);
                     $('#detail_kecamatan').text(response.data.kecamatan);
+                    $('#detail_kecamatan').text(response.data.kecamatan);
+
+
 
                     // Handle foto display
                     if (response.data.foto) {
