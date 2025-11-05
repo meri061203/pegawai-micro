@@ -1,7 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
-
+namespace App\Http\Requests\Person;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
@@ -9,29 +8,21 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 
 class PersonUpdateRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
             'nama_lengkap' => 'required|string|max:50',
-            'nama_panggilan' => 'nullable|string|max:30',
-            'jk' => 'required|in:l,p',
+            'nama_panggilan' => 'required|string|max:50',
+            'jk' => 'required|in:L,P',
             'tempat_lahir' => 'required|string|max:30',
             'tanggal_lahir' => 'required|date',
-            'agama' => 'nullable|string|max:20',
-            'kewarganegaraan' => 'nullable|string|max:50',
+            'agama' => 'nullable|string',
+            'kewarganegaraan' => 'nullable|string',
             'golongan_darah' => 'nullable|in:A,B,O,AB',
             'nik' => 'nullable|string|max:16',
             'kk' => 'nullable|string|max:16',
@@ -54,8 +45,8 @@ class PersonUpdateRequest extends FormRequest
             'jk' => 'Jenis Kelamin',
             'tempat_lahir' => 'Tempat Lahir',
             'tanggal_lahir' => 'Tanggal Lahir',
-            'agama' => 'Agama',
-            'kewarganegaraan' => 'Kewarganegaraan',
+            'agama' => 'agama',
+            'kewarganegaraan' => 'kewarganegaraan',
             'golongan_darah' => 'Golongan Darah',
             'nik' => 'NIK',
             'kk' => 'Nomor KK',
@@ -87,17 +78,17 @@ class PersonUpdateRequest extends FormRequest
             'nama_lengkap.required' => 'Field :attribute wajib diisi.',
             'nama_lengkap.string' => 'Field :attribute harus berupa teks.',
             'nama_lengkap.max' => 'Field :attribute maksimal :max karakter.',
+            'nama_panggilan.required' => 'Field :attribute wajib diisi.',
             'nama_panggilan.string' => 'Field :attribute harus berupa teks.',
-            'nama_panggilan.max' => 'Field :attribute maksimal :max karakter.',
+            'nama_pangilan.max' => 'Field :attribute maksimal :max karakter.',
             'jk.required' => 'Field :attribute wajib diisi.',
-            'jk.in' => 'Field :attribute harus p atau p.',
+            'jk.in' => 'Field :attribute harus L atau P.',
             'tempat_lahir.required' => 'Field :attribute wajib diisi.',
             'tempat_lahir.string' => 'Field :attribute harus berupa teks.',
             'tempat_lahir.max' => 'Field :attribute maksimal :max karakter.',
             'tanggal_lahir.required' => 'Field :attribute wajib diisi.',
             'tanggal_lahir.date' => 'Field :attribute harus berupa tanggal yang valid.',
             'agama.string' => 'Field :attribute harus berupa teks.',
-            'agama.max' => 'Field :attribute maksimal :max karakter.',
             'kewarganegaraan.string' => 'Field :attribute harus berupa teks.',
             'golongan_darah.in' => 'Field :attribute harus salah satu dari: A, B, O, AB.',
             'nik.string' => 'Field :attribute harus berupa teks.',

@@ -41,7 +41,7 @@ class DataManager {
                     const text = await responseBackup.text();
                     throw new Error(`Expected JSON but received: ${text}`);
                 }
-            } catch (error) {
+            }  catch (error) {
                 console.error(`Fetch error on attempt ${i + 1}: `, error);
                 if (i < maxRetries - 1) {
                     await new Promise(resolve => setTimeout(resolve, delayMs));

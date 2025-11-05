@@ -1,27 +1,26 @@
 <?php
 
-namespace App\Http\Controllers\admin\person;
+namespace App\Http\Controllers\Admin\Person;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\PersonUpdateRequest as PersonPersonUpdateRequest;
-use App\Http\Requests\PersonStoreRequest;
-
+use App\Http\Requests\Person\PersonStoreRequest;
+use App\Http\Requests\Person\PersonUpdateRequest;
 use App\Services\Person\PersonService;
 use App\Services\Tools\ResponseService;
 use App\Services\Tools\TransactionService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
-
-class PersonController extends Controller
+final class PersonController extends Controller
 {
     public function __construct(
-        private readonly PersonService $personService,
+        private readonly PersonService      $personService,
         private readonly TransactionService $transactionService,
-        private readonly ResponseService $responseService,
-
+        private readonly ResponseService    $responseService,
     )
-    {}
+    {
+    }
 
     public function index(): View
     {
@@ -30,28 +29,21 @@ class PersonController extends Controller
 
     public function list(): JsonResponse
     {
-        $data = $this->personService->getListData();
-
-        // Tambahkan action untuk setiap row
-        $data->transform(function ($row) {
-            $row->action = implode(' ', [
-                $this->transactionService->actionButton($row->id, 'detail'),
-                $this->transactionService->actionButton($row->id, 'edit'),
-            ]);
-            return $row;
-        });
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Data berhasil diambil',
-            'data' => $data
-        ]);
+        return $this->transactionService->handleWithDataTable(
+            fn() => $this->personService->getListData(),
+            [
+                'action' => fn($row) => implode(' ', [
+                    $this->transactionService->actionButton($row->id_person, 'detail'),
+                    $this->transactionService->actionButton($row->id_person, 'edit'),
+                ]),
+            ]
+        );
     }
 
     public function listApi(): JsonResponse
     {
         return $this->transactionService->handleWithDataTable(
-            fn()=> $this->personService->getListData()
+            fn() => $this->personService->getListData()
         );
     }
 
@@ -63,21 +55,21 @@ class PersonController extends Controller
             $payload = $request->only([
                 'nama_lengkap',
                 'nama_panggilan',
+                'jk',
                 'tempat_lahir',
                 'tanggal_lahir',
-                'agama',
+                 'agama',
                 'kewarganegaraan',
-                'email',
-                'no_hp',
+                'golongan_darah',
                 'nik',
                 'kk',
-                'npwp',
                 'alamat',
-                'id_desa',
-                'jk',
-                'golongan_darah',
                 'rt',
                 'rw',
+                'id_desa',
+                'npwp',
+                'no_hp',
+                'email',
             ]);
 
             $created = $this->personService->create($payload);
@@ -87,12 +79,11 @@ class PersonController extends Controller
                 $created->update(['foto' => $uploadResult['file_name']]);
             }
 
-
             return $this->responseService->successResponse('Data berhasil dibuat', $created, 201);
         });
     }
 
-    public function update(PersonPersonUpdateRequest $request, string $id): JsonResponse
+    public function update(PersonUpdateRequest $request, string $id): JsonResponse
     {
         $data = $this->personService->findById($id);
         if (!$data) {
@@ -104,22 +95,22 @@ class PersonController extends Controller
         return $this->transactionService->handleWithTransaction(function () use ($request, $data, $foto) {
             $payload = $request->only([
                 'nama_lengkap',
-                'nama_panggilan',
+                 'nama_panggilan',
+                'jk',
                 'tempat_lahir',
                 'tanggal_lahir',
-                'agama',
+                 'agama',
                 'kewarganegaraan',
-                'email',
-                'no_hp',
+                'golongan_darah',
                 'nik',
                 'kk',
-                'npwp',
                 'alamat',
-                'id_desa',
-                'jk',
-                'golongan_darah',
                 'rt',
                 'rw',
+                'id_desa',
+                'npwp',
+                'no_hp',
+                'email',
             ]);
 
             $updatedData = $this->personService->update($data, $payload);
@@ -141,5 +132,4 @@ class PersonController extends Controller
             return $this->responseService->successResponse('Data berhasil diambil', $data);
         });
     }
-
 }

@@ -24,42 +24,51 @@ final class Person extends Model implements Auditable
 
     protected $table = 'person';
 
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'id_person';
 
     protected $keyType = 'int';
 
     protected $dateFormat = 'Y-m-d';
 
     protected $fillable = [
-        'nama_lengkap',
-        'nama_panggilan',
+        'nama',
+        'jk',
         'tempat_lahir',
         'tanggal_lahir',
-        'jk',
-        'golongan_darah',
-        'agama',
         'kewarganegaraan',
-        'email',
-        'no_hp',
+        'golongan_darah',
         'nik',
-        'kk',
-        'npwp',
+        'nomor_kk',
         'alamat',
         'rt',
         'rw',
         'id_desa',
+        'npwp',
+        'nomor_hp',
+        'email',
         'foto',
     ];
 
     protected $guarded = [
-        'id',
+        'id_person',
     ];
 
     protected $casts = [
-        'id' => 'integer',
+        'id_person' => 'integer',
         'id_desa' => 'integer',
         'tanggal_lahir' => 'date',
     ];
+
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        Person::creating(function ($model) {
+            if (empty($model->uuid_person)) {
+                $model->uuid_person = (string)Str::uuid();
+            }
+        });
+    }
 
     public function setNamaLengkapAttribute($value): void
     {
@@ -68,17 +77,17 @@ final class Person extends Model implements Auditable
 
     public function setNamaPanggilanAttribute($value): void
     {
-        $this->attributes['nama_panggilan'] = strtoupper(trim(strip_tags($value)));
-    }
-
-    public function setTempatLahirAttribute($value): void
-    {
-        $this->attributes['tempat_lahir'] = trim(strip_tags($value));
+        $this->attributes['nama_Panggilan'] = strtoupper(trim(strip_tags($value)));
     }
 
     public function setAgamaAttribute($value): void
     {
         $this->attributes['agama'] = trim(strip_tags($value));
+    }
+
+    public function setTempatLahirAttribute($value): void
+    {
+        $this->attributes['tempat_lahir'] = trim(strip_tags($value));
     }
 
     public function setAlamatAttribute($value): void

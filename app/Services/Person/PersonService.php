@@ -6,43 +6,34 @@ use App\Models\Person\Person;
 use App\Services\Tools\FileUploadService;
 use Illuminate\Support\Collection;
 
-class  PersonService{
+final readonly class PersonService
+{
     public function __construct(
-        private FileUploadService $fileUploadService
-    ){}
+        private FileUploadService $fileUploadService,
+    )
+    {
+    }
 
     public function getListData(): Collection
     {
-        $query = Person::select([
-            'id',
+        return Person::select([
+            'id_person',
             'nama_lengkap',
             'nama_panggilan',
-            'tempat_lahir',
-            'tanggal_lahir',
+            'jk',
             'agama',
             'kewarganegaraan',
-            'email',
-            'no_hp',
-            'foto',
-            'jk',
+            'tempat_lahir',
+            'tanggal_lahir',
             'nik',
             'kk',
             'npwp',
+            'no_hp',
+            'email',
+            'foto',
             'alamat',
             'id_desa'
-        ]);
-
-        $search = request('search.value');
-        if ($search) {
-            $query->where(function($q) use ($search) {
-                $q->where('nama_lengkap', 'like', "%{$search}%")
-                ->orWhere('nama_panggilan', 'like', "%{$search}%")
-                ->orWhere('tempat_lahir', 'like', "%{$search}%")
-                ->orWhere('email', 'like', "%{$search}%")
-                ->orWhere('no_hp', 'like', "%{$search}%");
-            });
-        }
-        return $query->get();
+        ])->orderBy('nama')->get();
     }
 
     public function create(array $data): Person
@@ -60,14 +51,14 @@ class  PersonService{
             ->select([
                 'person.*',
                 'ref_almt_desa.desa',
-                'ref_almt_kecamatan.kecamatan',
                 'ref_almt_kecamatan.id_kecamatan',
-                'ref_almt_kabupaten.kabupaten',
+                'ref_almt_kecamatan.kecamatan',
                 'ref_almt_kabupaten.id_kabupaten',
-                'ref_almt_provinsi.provinsi',
+                'ref_almt_kabupaten.kabupaten',
                 'ref_almt_provinsi.id_provinsi',
+                'ref_almt_provinsi.provinsi',
             ])
-            ->where('person.id', $id)
+            ->where('person.id_person', $id)
             ->first();
     }
 
@@ -76,7 +67,7 @@ class  PersonService{
         return Person::find($id);
     }
 
-     public function update(Person $person, array $data): Person
+    public function update(Person $person, array $data): Person
     {
         $person->update($data);
 
@@ -104,7 +95,7 @@ class  PersonService{
             ->leftJoin('ref_almt_kabupaten', 'ref_almt_kecamatan.id_kabupaten', '=', 'ref_almt_kabupaten.id_kabupaten')
             ->leftJoin('ref_almt_provinsi', 'ref_almt_kabupaten.id_provinsi', '=', 'ref_almt_provinsi.id_provinsi')
             ->select([
-                'person.id',
+                'person.id_person',
                 'person.nik',
                 'person.nama_lengkap',
                 'person.tempat_lahir',
@@ -115,7 +106,7 @@ class  PersonService{
                 'ref_almt_provinsi.provinsi',
             ])
             ->where('person.nik', $nik)
-            ->orderBy('person.nama_lengkap')
+            ->orderBy('person.nama')
             ->first();
     }
 
@@ -127,7 +118,7 @@ class  PersonService{
             ->leftJoin('ref_almt_kabupaten', 'ref_almt_kecamatan.id_kabupaten', '=', 'ref_almt_kabupaten.id_kabupaten')
             ->leftJoin('ref_almt_provinsi', 'ref_almt_kabupaten.id_provinsi', '=', 'ref_almt_provinsi.id_provinsi')
             ->select([
-                'person.id_person', 'person.uuid_person', 'person.nama_lengkap', 'person.jk',
+                'person.id_person', 'person.uuid_person', 'person.nama', 'person.jk',
                 'person.tempat_lahir', 'person.tanggal_lahir', 'person.nik', 'person.nomor_kk',
                 'person.npwp', 'person.nomor_hp', 'person.foto', 'person.alamat',
                 'ref_almt_desa.desa', 'ref_almt_kecamatan.kecamatan',

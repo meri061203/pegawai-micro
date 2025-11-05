@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Person;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
@@ -8,31 +8,23 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 
 class PersonStoreRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
             'nama_lengkap' => 'required|string|max:50',
-            'nama_panggilan' => 'nullable|string|max:30',
-            'jk' => 'required|in:l,p',
+            'nama_panggilan' => 'required|string|max:50',
+            'jk' => 'required|in:L,P',
             'tempat_lahir' => 'required|string|max:30',
             'tanggal_lahir' => 'required|date',
-            'agama' => 'nullable|string|max:20',
-            'kewarganegaraan' => 'nullable|string|max:50',
+            'kewarganegaraan' => 'nullable|string',
+            'agama' => 'nullable|string',
             'golongan_darah' => 'nullable|in:A,B,O,AB',
-            'nik' => 'nullable|string|max:16',
+            'nik' => 'nullable|string|max:16|unique:person,nik',
             'kk' => 'nullable|string|max:16',
             'alamat' => 'nullable|string|max:100',
             'rt' => 'nullable|string|max:3',
@@ -53,7 +45,6 @@ class PersonStoreRequest extends FormRequest
             'jk' => 'Jenis Kelamin',
             'tempat_lahir' => 'Tempat Lahir',
             'tanggal_lahir' => 'Tanggal Lahir',
-            'agama' => 'Agama',
             'kewarganegaraan' => 'Kewarganegaraan',
             'golongan_darah' => 'Golongan Darah',
             'nik' => 'NIK',
@@ -67,7 +58,6 @@ class PersonStoreRequest extends FormRequest
             'email' => 'Email',
             'foto' => 'Foto',
         ];
-
     }
 
     protected function failedValidation(Validator $validator)
@@ -87,21 +77,22 @@ class PersonStoreRequest extends FormRequest
             'nama_lengkap.required' => 'Field :attribute wajib diisi.',
             'nama_lengkap.string' => 'Field :attribute harus berupa teks.',
             'nama_lengkap.max' => 'Field :attribute maksimal :max karakter.',
+            'nama_panggilan.required' => 'Field :attribute wajib diisi.',
             'nama_panggilan.string' => 'Field :attribute harus berupa teks.',
             'nama_panggilan.max' => 'Field :attribute maksimal :max karakter.',
             'jk.required' => 'Field :attribute wajib diisi.',
-            'jk.in' => 'Field :attribute harus l atau p.',
+            'jk.in' => 'Field :attribute harus L atau P.',
             'tempat_lahir.required' => 'Field :attribute wajib diisi.',
             'tempat_lahir.string' => 'Field :attribute harus berupa teks.',
             'tempat_lahir.max' => 'Field :attribute maksimal :max karakter.',
             'tanggal_lahir.required' => 'Field :attribute wajib diisi.',
             'tanggal_lahir.date' => 'Field :attribute harus berupa tanggal yang valid.',
             'agama.string' => 'Field :attribute harus berupa teks.',
-            'agama.max' => 'Field :attribute maksimal :max karakter.',
             'kewarganegaraan.string' => 'Field :attribute harus berupa teks.',
             'golongan_darah.in' => 'Field :attribute harus salah satu dari: A, B, O, AB.',
             'nik.string' => 'Field :attribute harus berupa teks.',
             'nik.max' => 'Field :attribute maksimal :max karakter.',
+            'nik.unique' => 'Field :attribute sudah digunakan.',
             'kk.string' => 'Field :attribute harus berupa teks.',
             'kk.max' => 'Field :attribute maksimal :max karakter.',
             'alamat.string' => 'Field :attribute harus berupa teks.',

@@ -75,7 +75,7 @@ const ErrorHandler = (() => {
                 body: JSON.stringify({errors}),
             });
 
-            if (!response.ok) {
+             if (!response.ok) {
                 console.error("Failed to log errors:", response.statusText);
             }
         } catch (err) {
