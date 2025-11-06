@@ -61,7 +61,7 @@ final class PersonSdm extends Model implements Auditable
         $this->attributes['tipe_pegawai'] = $v ? trim(strip_tags($v)) : null;
     }
 
-      public function getTanggalLahirAttribute($value): ?string
+      public function getTanggalMasukAttribute($value): ?string
     {
         return $value ? Carbon::parse($value)->format('Y-m-d') : null;
     }

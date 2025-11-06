@@ -26,16 +26,16 @@ final readonly class PersonSdmService
         return PersonSdm::query()
             ->leftJoin('person', 'person.id_person', '=', 'person_sdm.id_person')
             ->select([
-                'person_sdm.id_sdm',
-                'person_sdm.nomor_karpeg',
-                'person_sdm.nomor_sk',
-                'person_sdm.tmt',
-                'person_sdm.tmt_pensiun',
-                'person.nama',
+                'person_sdm.id',
+                'person_sdm.nip',
+                'person_sdm.status_pegawai',
+                'person_sdm.tipe_pegawai',
+                'person_sdm.tanggal_masuk',
+                'person.nama_lengkap',
                 'person.uuid_person',
             ])
             ->where('person.uuid_person', $uuid)
-            ->orderByDesc('person_sdm.tmt')
+            ->orderByDesc('person_sdm.tanggal_masuk')
             ->get();
     }
 
@@ -44,12 +44,12 @@ final readonly class PersonSdmService
         return PersonSdm::query()
             ->leftJoin('person', 'person.id_person', '=', 'person_sdm.id_person')
             ->select([
-                'person_sdm.id_sdm',
-                'person_sdm.nomor_karpeg',
-                'person_sdm.nomor_sk',
-                'person_sdm.tmt',
-                'person_sdm.tmt_pensiun',
-                'person.nama',
+                'person_sdm.id',
+                'person_sdm.nip',
+                'person_sdm.status_pegawai',
+                'person_sdm.tipe_pegawai',
+                'person_sdm.tanggal_masuk',
+                'person.nama_lengkap',
                 'person.uuid_person',
             ])
             ->get();
@@ -67,9 +67,9 @@ final readonly class PersonSdmService
             ->select([
                 'person_sdm.*',
                 'person.nik',
-                'person.nomor_kk',
-                'person.nomor_hp',
-                'person.nama',
+                'person.kk',
+                'person.no_hp',
+                'person.nama_lengkap',
             ])
             ->where('person_sdm.id_sdm', $id)
             ->first();

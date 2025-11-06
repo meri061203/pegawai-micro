@@ -56,7 +56,7 @@ class PersonSdmUpdateRequest extends FormRequest
             'nip.max' => 'Field :attribute maksimal :max karakter.',
             'status_pegawai.in' => 'Field :attribute harus TETEP atau KONTRAK.',
             'tipe_pegawai.in' => 'Field :attribute harus FULL TIME atau PART TIME.',
-            'tanggal_masuk' => 'Field :attribute harus berupa tanggal yang valid.',
+            'tanggal_masuk.date' => 'Field :attribute harus berupa tanggal yang valid.',
         ];
     }
 }
