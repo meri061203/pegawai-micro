@@ -22,7 +22,7 @@ final class ValidationService
             ], 400);
         }
 
-        return null;
+        return null; 
     }
 
     public function validateDataView(array $data, array $rules, array $messages = [], array $attributes = []): ?RedirectResponse
