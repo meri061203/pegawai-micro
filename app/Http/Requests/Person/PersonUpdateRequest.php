@@ -18,7 +18,7 @@ class PersonUpdateRequest extends FormRequest
         return [
             'nama_lengkap' => 'required|string|max:50',
             'nama_panggilan' => 'required|string|max:50',
-            'jk' => 'required|in:L,P',
+            'jk' => 'required|in:l,p',
             'tempat_lahir' => 'required|string|max:30',
             'tanggal_lahir' => 'required|date',
             'agama' => 'nullable|string',
