@@ -1,53 +1,78 @@
 <script defer>
-    $('#form_create').on('show.bs.modal', function (e) {
+    $("#form_create").on("show.bs.modal", function (e) {
+        fetchDataDropdown("{{ route('api.ref.hubungan-keluarga') }}", '#id_hubungan_keluarga', 'hubungan_keluarga', 'hubungan_keluarga');
 
-        $('#tanggal_lahir').flatpickr({
-            dateFormat: 'Y-m-d',
-            altFormat: 'd/m/Y',
-            allowInput: false,
-            altInput: true,
+        // Get SDM ID from current person
+        const currentPersonId = "{{ $id ?? '' }}";
+
+        $('#btn_search_person').on('click', function () {
+            const nik = $('#search_nik').val().trim();
+
+            if (!nik) {
+                Swal.fire('Warning', 'Masukkan NIK terlebih dahulu', 'warning');
+                return;
+            }
+
+            if (nik.length < 16) {
+                Swal.fire('Warning', 'NIK harus 16 digit', 'warning');
+                return;
+            }
+
+            $(this).prop('disabled', true).html('Searching...');
+            DataManager.fetchData("{{ route('admin.sdm.keluarga.find_by_nik', ':nik') }}".replace(':nik', nik))
+                .then(response => {
+                    $('#btn_search_person').prop('disabled', false).html('Cari Person');
+
+                    if (response.success) {
+                        const data = response.data;
+                        $('#person_nama_lengkap').text(data.nama_lengkap);
+                        $('#person_nik').text(data.nik);
+                        $('#person_tempat_lahir').text(data.tempat_lahir);
+                        $('#person_tanggal_lahir').text(formatter.formatDate(response.data.tanggal_lahir));
+                        $('#person_alamat').text(`${data.desa}, ${data.kecamatan}, ${data.kabupaten}, ${data.provinsi}`.replace(/^,\s*|,\s*$/g, '').replace(/,\s*,/g, ','));
+                        $('#id_person').val(data.id_person);
+                        $('#person_info').show();
+                        $('#keluarga_form').show();
+                        $('#btn_save').show();
+                        Swal.fire('Success', 'Person ditemukan!', 'success');
+                    } else {
+                        Swal.fire('tidak ditemukan', response.message || 'Person dengan NIK tersebut tidak ditemukan', 'warning');
+                    }
+                })
+                .catch(error => {
+                    $('#btn_search_person').prop('disabled', false).html('Cari Person');
+                    ErrorHandler.handleError(error);
+                });
         });
 
-        fetchDataDropdown("{{ route('api.almt.provinsi') }}", "#id_provinsi", "provinsi", "provinsi");
+        // Clear person search
+        $('#btn_clear_person').on('click', function () {
+            clearPersonSearch();
+            Swal.fire('Info', 'Pencarian person dibersihkan', 'info');
+        });
 
-        $('#id_provinsi').off('change').on('change', function () {
-            const provinsiId = $(this).val();
-            $('#id_kabupaten').empty().append('<option value="">-- Pilih Kabupaten/Kota --</option>');
-            $('#id_kecamatan').empty().append('<option value="">-- Pilih Kecamatan --</option>');
-            $('#id_desa').empty().append('<option value="">-- Pilih Desa/Kelurahan --</option>');
-
-            if (provinsiId) {
-                const kabupatenUrl = `{{ route('api.almt.kabupaten', ':id') }}`.replace(':id', provinsiId);
-                fetchDataDropdown(kabupatenUrl, '#id_kabupaten', 'kabupaten', 'kabupaten');
+        $('#search_nik').on('keypress', function (e) {
+            if (e.which == 13) {
+                $('#btn_search_person').click();
             }
         });
 
-        $('#id_kabupaten').off('change').on('change', function () {
-            const kabupatenId = $(this).val();
-            $('#id_kecamatan').empty().append('<option value="">-- Pilih Kecamatan --</option>');
-            $('#id_desa').empty().append('<option value="">-- Pilih Desa/Kelurahan --</option>');
-
-            if (kabupatenId) {
-                const kecamatanUrl = `{{ route('api.almt.kecamatan', ':id') }}`.replace(':id', kabupatenId);
-                fetchDataDropdown(kecamatanUrl, '#id_kecamatan', 'kecamatan', 'kecamatan');
-            }
-        });
-
-        $('#id_kecamatan').off('change').on('change', function () {
-            const kecamatanId = $(this).val();
-            $('#id_desa').empty().append('<option value="">-- Pilih Desa/Kelurahan --</option>');
-
-            if (kecamatanId) {
-                const desaUrl = `{{ route('api.almt.desa', ':id') }}`.replace(':id', kecamatanId);
-                fetchDataDropdown(desaUrl, '#id_desa', 'desa', 'desa');
-            }
-        });
-
-        $('#bt_submit_create').off('submit').on('submit', function (e) {
+        $("#bt_submit_create").on("submit", function (e) {
             e.preventDefault();
+
+            if (!$('#id_person').val()) {
+                Swal.fire('Warning', 'Pilih person terlebih dahulu dengan mencari NIK', 'warning');
+                return;
+            }
+            if (!$('#id_hubungan_keluarga').val()) {
+                Swal.fire('Warning', 'Hubungan Keluarga wajib dipilih', 'warning');
+                $('#id_hubungan_keluarga').focus();
+                return;
+            }
+
             Swal.fire({
                 title: 'Kamu yakin?',
-                text: 'Apakah datanya benar dan apa yang anda inginkan?',
+                text: "Apakah datanya benar dan apa yang anda inginkan?",
                 icon: 'warning',
                 confirmButtonColor: '#3085d6',
                 allowOutsideClick: false, allowEscapeKey: false,
@@ -57,20 +82,17 @@
             }).then((result) => {
                 if (result.value) {
                     DataManager.openLoading();
-                    const formData = new FormData();
-                    formData.append('id_sdm', $('#id_sdm').val());
-                    formData.append('id_person', $('#id_person').val());
-                    formData.append('status', $('#status').val());
-                    formData.append('status_tanggungan', $('#status_tanggungan').val());
-
-
-                    const fileInput = $('#foto')[0];
-                    if (fileInput.files[0]) {
-                        formData.append('foto', fileInput.files[0]);
-                    }
-
-                    const action = "{{ route('admin.keluarga.store') }}";
-                    DataManager.formData(action, formData).then(response => {
+                    const input = {
+                        "uuid_person": currentPersonId,
+                        "id_person": $("#id_person").val(),
+                        "id_hubungan_keluarga": $("#id_hubungan_keluarga").val(),
+                        "status_tanggungan": $("#status_tanggungan").val(),
+                        "pekerjaan": $("#pekerjaan").val(),
+                        "pendidikan_terakhir": $("#pendidikan_terakhir").val(),
+                        "penghasilan": $("#penghasilan").val(),
+                    };
+                    const action = "{{ route('admin.sdm.keluarga.store') }}";
+                    DataManager.postData(action, input).then(response => {
                         if (response.success) {
                             Swal.fire('Success', response.message, 'success');
                             setTimeout(function () {
@@ -82,22 +104,31 @@
                             validationErrorFilter.filterValidationErrors(response);
                             Swal.fire('Warning', 'validasi bermasalah', 'warning');
                         }
-
                         if (!response.success && !response.errors) {
                             Swal.fire('Peringatan', response.message, 'warning');
                         }
-
                     }).catch(error => {
                         ErrorHandler.handleError(error);
                     });
                 }
             })
         });
-    }).on('hidden.bs.modal', function () {
+    }).on("hidden.bs.modal", function () {
         const $m = $(this);
         $m.find('form').trigger('reset');
         $m.find('select, textarea').val('').trigger('change');
         $m.find('.is-invalid, .is-valid').removeClass('is-invalid is-valid');
         $m.find('.invalid-feedback, .valid-feedback, .text-danger').remove();
+        clearPersonSearch();
     });
+
+    function clearPersonSearch() {
+        $('#person_info').hide();
+        $('#keluarga_form').hide();
+        $('#btn_save').hide();
+        $('#id_person').val('');
+        $('#id_sdm').val('');
+        $('#search_nik').val('');
+        $('#person_nama_lengkap, #person_nik, #person_tempat_lahir, #person_tanggal_lahir, #person_alamat').text('');
+    }
 </script>

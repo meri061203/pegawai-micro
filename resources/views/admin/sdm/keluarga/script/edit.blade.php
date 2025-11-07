@@ -1,171 +1,85 @@
 <script defer>
-    $('#form_edit').on('show.bs.modal', function (e) {
-        // Don't reset here - let global cleaner handle it
+    $("#form_edit").on("show.bs.modal", function (e) {
         const button = $(e.relatedTarget);
         const id = button.data("id");
-        const detail = '{{ route('admin.keluarga.show', [':id']) }}';
+        const detail = "{{ route('admin.sdm.keluarga.show', ':id') }}";
 
-        let edit_tanggal_lahir = $('#edit_tanggal_lahir').flatpickr({
-            dateFormat: 'Y-m-d',
-            altFormat: 'd/m/Y',
-            allowInput: false,
-            altInput: true,
-        });
+        DataManager.fetchData(detail.replace(':id', id)).then(response => {
+            if (response.success) {
+                const data = response.data;
+                $("#edit_nama_anggota").text(data.nama_anggota);
+                $("#edit_nik_anggota").text(data.nik_anggota);
+                $("#edit_status_tanggungan").val(data.status_tanggungan).trigger('change');
+                $("#edit_pekerjaan").val(data.pekerjaan);
+                $("#edit_pendidikan_terakhir").val(data.pendidikan_terakhir);
+                $("#edit_penghasilan").val(data.penghasilan);
 
-        DataManager.fetchData(detail.replace(':id', id))
-            .then(function (response) {
-                if (response.success) {
-                    $('#edit_status').val(response.data.status).trigger('change');
-                    $('#edit_status_tanggungan').val(response.data.status_tanggungan).trigger('change');
+                fetchDataDropdown("{{ route('api.ref.hubungan-keluarga') }}", "#edit_id_hubungan_keluarga", "hubungan_keluarga", "hubungan_keluarga", function () {
+                    $("#edit_id_hubungan_keluarga").val(data.id_hubungan_keluarga).trigger("change");
+                });
 
-
-                    // Handle foto preview
-                    if (response.data.foto) {
-                        const photoUrl = '{{ route('admin.view-file', [':folder', ':filename']) }}'
-                            .replace(':folder', 'person')
-                            .replace(':filename', response.data.foto);
-                        $('#edit_image_preview').css('background-image', `url('${photoUrl}')`);
-                        $('#edit_image_preview').css('background-size', 'cover');
-                        $('#edit_image_preview').css('background-position', 'center');
-                    } else {
-                        $('#edit_image_preview').css('background-image', '');
-                        $('#edit_image_preview').css('background-size', 'contain');
-                        $('#edit_image_preview').css('background-position', 'center');
-                    }
-                    fetchDataDropdown('{{ route('api.almt.provinsi') }}', '#edit_id_provinsi', 'provinsi', 'provinsi', () => {
-                        const provinsiOptions = $('#edit_id_provinsi option');
-                        provinsiOptions.each(function () {
-                            if ($(this).text() === response.data.provinsi) {
-                                $('#edit_id_provinsi').val($(this).val()).trigger('change');
-
-                                setTimeout(() => {
-                                    const kabupatenOptions = $('#edit_id_kabupaten option');
-                                    kabupatenOptions.each(function () {
-                                        if ($(this).text() === response.data.kabupaten) {
-                                            $('#edit_id_kabupaten').val($(this).val()).trigger('change');
-
-                                            setTimeout(() => {
-                                                const kecamatanOptions = $('#edit_id_kecamatan option');
-                                                kecamatanOptions.each(function () {
-                                                    if ($(this).text() === response.data.kecamatan) {
-                                                        $('#edit_id_kecamatan').val($(this).val()).trigger('change');
-
-                                                        setTimeout(() => {
-                                                            const desaOptions = $('#edit_id_desa option');
-                                                            desaOptions.each(function () {
-                                                                if ($(this).text() === response.data.desa) {
-                                                                    $('#edit_id_desa').val($(this).val()).trigger('change');
-                                                                    return false;
-                                                                }
-                                                            });
-                                                        }, 1000);
-                                                        return false;
-                                                    }
-                                                });
-                                            }, 1000);
-                                            return false;
-                                        }
-                                    });
-                                }, 1000);
-                                return false;
-                            }
-                        });
-                    });
-                } else {
-                    Swal.fire('Warning', response.message, 'warning');
-                }
-            }).catch(function (error) {
-            ErrorHandler.handleError(error);
-        });
-
-        $('#edit_id_provinsi').off('change.edit').on('change.edit', function () {
-            const provinsiId = $(this).val();
-            $('#edit_id_kabupaten').empty().append('<option value="">-- Pilih Kabupaten/Kota --</option>');
-            $('#edit_id_kecamatan').empty().append('<option value="">-- Pilih Kecamatan --</option>');
-            $('#edit_id_desa').empty().append('<option value="">-- Pilih Desa/Kelurahan --</option>');
-
-            if (provinsiId) {
-                const kabupatenUrl = `{{ route('api.almt.kabupaten', ':id') }}`.replace(':id', provinsiId);
-                fetchDataDropdown(kabupatenUrl, '#edit_id_kabupaten', 'kabupaten', 'kabupaten');
+            } else {
+                Swal.fire("Warning", response.message, "warning");
             }
-        });
+        })
+            .catch(error => {
+                ErrorHandler.handleError(error);
+            });
 
-        $('#edit_id_kabupaten').off('change.edit').on('change.edit', function () {
-            const kabupatenId = $(this).val();
-            $('#edit_id_kecamatan').empty().append('<option value="">-- Pilih Kecamatan --</option>');
-            $('#edit_id_desa').empty().append('<option value="">-- Pilih Desa/Kelurahan --</option>');
-
-            if (kabupatenId) {
-                const kecamatanUrl = `{{ route('api.almt.kecamatan', ':id') }}`.replace(':id', kabupatenId);
-                fetchDataDropdown(kecamatanUrl, '#edit_id_kecamatan', 'kecamatan', 'kecamatan');
-            }
-        });
-
-        $('#edit_id_kecamatan').off('change.edit').on('change.edit', function () {
-            const kecamatanId = $(this).val();
-            $('#edit_id_desa').empty().append('<option value="">-- Pilih Desa/Kelurahan --</option>');
-
-            if (kecamatanId) {
-                const desaUrl = `{{ route('api.almt.desa', ':id') }}`.replace(':id', kecamatanId);
-                fetchDataDropdown(desaUrl, '#edit_id_desa', 'desa', 'desa');
-            }
-        });
-
-        $('#bt_submit_edit').off('submit').on('submit', function (e) {
+        $("#bt_submit_edit").on("submit", function (e) {
             e.preventDefault();
+
+            // Validation for required fields
+            if (!$('#edit_id_hubungan_keluarga').val()) {
+                Swal.fire('Warning', 'Hubungan Keluarga wajib dipilih', 'warning');
+                $('#edit_id_hubungan_keluarga').focus();
+                return;
+            }
+
+            const updateUrl = "{{ route('admin.sdm.keluarga.update', ':id') }}".replace(":id", id);
             Swal.fire({
                 title: 'Kamu yakin?',
-                text: 'Apakah datanya benar dan apa yang anda inginkan?',
+                text: "Apakah datanya benar dan apa yang anda inginkan?",
                 icon: 'warning',
                 confirmButtonColor: '#3085d6',
-                allowOutsideClick: false, allowEscapeKey: false,
-                showCancelButton: true,
                 cancelButtonColor: '#dd3333',
+                showCancelButton: true,
+                allowOutsideClick: false, allowEscapeKey: false,
                 confirmButtonText: 'Ya, Simpan', cancelButtonText: 'Batal', focusCancel: true,
-            }).then((result) => {
+            }).then(result => {
                 if (result.value) {
                     DataManager.openLoading();
-                    const formData = new FormData();
-                    formData.append('id_sdm', $('#edit_id_sdm').val());
-                    formData.append('id_person', $('#edit_id_person').val());
-                    formData.append('status', $('#edit_status').val());
-                    formData.append('status_tanggungan', $('#edit_status_tanggungan').val());
-
-
-                    const fileInput = $('#edit_foto')[0];
-                    if (fileInput.files[0]) {
-                        formData.append('foto', fileInput.files[0]);
-                    }
-
-                    const update = '{{ route('admin.person.update', [':id']) }}';
-                    DataManager.formData(update.replace(':id', id), formData).then(response => {
+                    const input = {
+                        "id_hubungan_keluarga": $("#edit_id_hubungan_keluarga").val(),
+                        "status_tanggungan": $("#edit_status_tanggungan").val(),
+                        "pekerjaan": $("#edit_pekerjaan").val(),
+                        "pendidikan_terakhir": $("#edit_pendidikan_terakhir").val(),
+                        "penghasilan": $("#edit_penghasilan").val(),
+                    };
+                    DataManager.postData(updateUrl, input).then(response => {
                         if (response.success) {
-                            Swal.fire('Success', response.message, 'success');
-                            setTimeout(function () {
-                                location.reload();
-                            }, 1000);
-                        }
-                        if (!response.success && response.errors) {
-                            const validationErrorFilter = new ValidationErrorFilter(
-                                'edit_');
+                            Swal.fire("Success", response.message, "success");
+                            setTimeout(() => location.reload(), 1000);
+                        } else if (response.errors) {
+                            const validationErrorFilter = new ValidationErrorFilter("edit_");
                             validationErrorFilter.filterValidationErrors(response);
                             Swal.fire('Peringatan', 'Isian Anda belum lengkap atau tidak valid.', 'warning');
+                        } else {
+                            Swal.fire("Warning", response.message, "warning");
                         }
-
-                        if (!response.success && !response.errors) {
-                            Swal.fire('Warning', response.message, 'warning');
-                        }
-                    }).catch(error => {
-                        ErrorHandler.handleError(error);
-                    });
+                    })
+                        .catch(error => {
+                            ErrorHandler.handleError(error);
+                        });
                 }
-            })
+            });
         });
-    }).on('hidden.bs.modal', function () {
-        const $m = $(this);
-        $m.find('form').trigger('reset');
-        $m.find('select, textarea').val('').trigger('change');
-        $m.find('.is-invalid, .is-valid').removeClass('is-invalid is-valid');
-        $m.find('.invalid-feedback, .valid-feedback, .text-danger').remove();
-    });
+    })
+        .on("hidden.bs.modal", function () {
+            const $m = $(this);
+            $m.find('form').trigger('reset');
+            $m.find('select, textarea').val('').trigger('change');
+            $m.find('.is-invalid, .is-valid').removeClass('is-invalid is-valid');
+            $m.find('.invalid-feedback, .valid-feedback, .text-danger').remove();
+        });
 </script>
