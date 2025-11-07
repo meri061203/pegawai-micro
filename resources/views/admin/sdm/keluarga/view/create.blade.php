@@ -1,217 +1,112 @@
 <div class="modal fade" id="form_create" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" role="dialog"
      aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
-        <form method="post" id="bt_submit_create" enctype="multipart/form-data">
+        <form method="post" id="bt_submit_create">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Tambah Keluarga</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        Tambah Anggota Keluarga SDM
+                    </h5>
                     <a type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></a>
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <!-- Kolom 2: Data Dasar -->
-                        <div class="col-md-4">
-                            <h6 class="text-primary fw-bold mb-3 border-bottom border-primary pb-2">Data Keluarga</h6>
-
-                            <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1 required">
-                                    <span>ID SDM</span>
-                                </label>
-                                <input type="text" id="id_sdm" class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                       maxlength="50" required/>
-                                <div class="invalid-feedback"></div>
+                        <div class="d-flex flex-column mb-2">
+                            <label class="fs-sm-8 fs-lg-6 fw-bolder mb-1 required">
+                                <span>NIK</span>
+                            </label>
+                            <input type="text" id="search_nik" class="form-control form-control-sm fs-sm-8 fs-lg-6"
+                                   maxlength="16" placeholder="Masukkan NIK untuk mencari person anggota keluarga"
+                                   required>
+                            <div class="invalid-feedback"></div>
+                            <div class="mt-2">
+                                <button type="button" id="btn_search_person"
+                                        class="btn btn-sm btn-info me-2">
+                                    Cari Person
+                                </button>
+                                <button type="button" id="btn_clear_person"
+                                        class="btn btn-sm btn-warning">
+                                    Clear
+                                </button>
                             </div>
-
-                            <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1 required">
-                                    <span>ID Person</span>
-                                </label>
-                                <input type="text" id="id_person" class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                       maxlength="50" required/>
-                                <div class="invalid-feedback"></div>
+                        </div>
+                    </div>
+                    <div id="person_info" style="display:none;"
+                         class="mb-4 p-3 bg-light-success border border-success border-dashed rounded justify-content-md-center">
+                        <h6 class="text-success mb-2">Data Ditemukan:</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="mb-1"><strong>Nama:</strong> <span id="person_nama"></span></p>
+                                <p class="mb-1"><strong>NIK:</strong> <span id="person_nik"></span></p>
+                                <p class="mb-1"><strong>Tempat Lahir:</strong> <span id="person_tempat_lahir"></span>
+                                </p>
                             </div>
-
+                            <div class="col-md-6">
+                                <p class="mb-1"><strong>Tanggal Lahir:</strong> <span
+                                            id="person_tanggal_lahir"></span></p>
+                                <p class="mb-1"><strong>Alamat:</strong> <span id="person_alamat"></span></p>
+                            </div>
+                        </div>
+                        <input type="hidden" id="id_person" name="id_person">
+                        <input type="hidden" id="id_sdm" name="id_sdm">
+                    </div>
+                    <div class="row" id="keluarga_form" style="display:none;">
+                        <div class="col-md-6">
                             <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1 required">
-                                    <span>Status</span>
+                                <label class="fs-sm-8 fs-lg-6 fw-bolder mb-1 required">
+                                    <span>Hubungan Keluarga</span>
                                 </label>
-                                <select data-control="select2" id="jk"
+                                <select data-control="select2" id="id_hubungan_keluarga"
                                         class="form-control form-control-sm fs-sm-8 fs-lg-6" data-allow-clear="true"
-                                        data-placeholder="Pilih Jenis Kelamin" required>
-                                    <option value="">Pilih Jenis Kelamin</option>
-                                    <option value="L">Laki-laki</option>
-                                    <option value="P">Perempuan</option>
+                                        data-placeholder="Pilih Hubungan Keluarga" required>
                                 </select>
-                                <div class="invalid-feedback"></div>
-                            </div>
-
-                            <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1 required">
-                                    <span>Tempat Lahir</span>
-                                </label>
-                                <input type="text" id="tempat_lahir"
-                                       class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                       maxlength="30" required/>
-                                <div class="invalid-feedback"></div>
-                            </div>
-
-                            <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1 required">
-                                    <span>Tanggal Lahir</span>
-                                </label>
-                                <input type="text" id="tanggal_lahir"
-                                       class="form-control form-control-sm fs-sm-8 fs-lg-6" required/>
-                                <div class="invalid-feedback"></div>
-                            </div>
-
-                            <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                    <span>Kewarganegaraan</span>
-                                </label>
-                                <input type="text" id="kewarganegaraan"
-                                       class="form-control form-control-sm fs-sm-8 fs-lg-6"/>
-                                <div class="invalid-feedback"></div>
-                            </div>
-
-                            <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                    <span>Golongan Darah</span>
-                                </label>
-                                <select data-control="select2" id="golongan_darah"
-                                        class="form-control form-control-sm fs-sm-8 fs-lg-6" data-allow-clear="true"
-                                        data-placeholder="Pilih Golongan Darah">
-                                    <option value="">Pilih Golongan Darah</option>
-                                    <option value="A">A</option>
-                                    <option value="B">B</option>
-                                    <option value="AB">AB</option>
-                                    <option value="O">O</option>
-                                </select>
-                                <div class="invalid-feedback"></div>
-                            </div>
-
-                            <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                    <span>NIK</span>
-                                </label>
-                                <input type="text" id="nik" class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                       maxlength="16"/>
-                                <div class="invalid-feedback"></div>
-                            </div>
-
-                            <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                    <span>Nomor KK</span>
-                                </label>
-                                <input type="text" id="nomor_kk" class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                       maxlength="16"/>
-                                <div class="invalid-feedback"></div>
-                            </div>
-
-                            <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                    <span>NPWP</span>
-                                </label>
-                                <input type="text" id="npwp" class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                       maxlength="30"/>
-                                <div class="invalid-feedback"></div>
-                            </div>
-
-                            <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                    <span>Nomor HP</span>
-                                </label>
-                                <input type="text" id="nomor_hp" class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                       maxlength="16"/>
-                                <div class="invalid-feedback"></div>
-                            </div>
-
-                            <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                    <span>Email</span>
-                                </label>
-                                <input type="text" id="email" class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                       maxlength="100"/>
                                 <div class="invalid-feedback"></div>
                             </div>
                         </div>
-
-                        <!-- Kolom 3: Alamat -->
-                        <div class="col-md-5">
-                            <h6 class="text-primary fw-bold mb-3 border-bottom border-primary pb-2">Alamat</h6>
-
+                        <div class="col-md-6">
                             <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                    <span>Alamat</span>
+                                <label class="fs-sm-8 fs-lg-6 fw-bolder mb-1">
+                                    <span>Status Tanggungan</span>
                                 </label>
-                                <textarea id="alamat" class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                          maxlength="100" rows="3"></textarea>
-                                <div class="invalid-feedback"></div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-6">
-                                    <div class="d-flex flex-column mb-2">
-                                        <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                            <span>RT</span>
-                                        </label>
-                                        <input type="text" id="rt" class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                               maxlength="3"/>
-                                        <div class="invalid-feedback"></div>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="d-flex flex-column mb-2">
-                                        <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                            <span>RW</span>
-                                        </label>
-                                        <input type="text" id="rw" class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                               maxlength="3"/>
-                                        <div class="invalid-feedback"></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                    <span>Provinsi</span>
-                                </label>
-                                <select data-control="select2" id="id_provinsi"
-                                        class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                        data-allow-clear="true" data-placeholder="Pilih Provinsi">
+                                <select data-control="select2" id="status_tanggungan"
+                                        class="form-control form-control-sm fs-sm-8 fs-lg-6" data-allow-clear="true"
+                                        data-placeholder="Pilih Status">
+                                    <option value="Ya">Ya</option>
+                                    <option value="Tidak">Tidak</option>
                                 </select>
                                 <div class="invalid-feedback"></div>
                             </div>
-
+                        </div>
+                        <div class="col-md-6">
                             <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                    <span>Kabupaten/Kota</span>
+                                <label class="fs-sm-8 fs-lg-6 fw-bolder mb-1">
+                                    <span>Pekerjaan</span>
                                 </label>
-                                <select data-control="select2" id="id_kabupaten"
-                                        class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                        data-allow-clear="true" data-placeholder="Pilih Kabupaten/Kota">
-                                </select>
+                                <input type="text" id="pekerjaan"
+                                       class="form-control form-control-sm fs-sm-8 fs-lg-6" maxlength="100"
+                                       placeholder="Masukkan pekerjaan">
                                 <div class="invalid-feedback"></div>
                             </div>
-
+                        </div>
+                        <div class="col-md-6">
                             <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                    <span>Kecamatan</span>
+                                <label class="fs-sm-8 fs-lg-6 fw-bolder mb-1">
+                                    <span>Pendidikan Terakhir</span>
                                 </label>
-                                <select data-control="select2" id="id_kecamatan"
-                                        class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                        data-allow-clear="true" data-placeholder="Pilih Kecamatan">
-                                </select>
+                                <input type="text" id="pendidikan_terakhir"
+                                       class="form-control form-control-sm fs-sm-8 fs-lg-6" maxlength="100"
+                                       placeholder="Masukkan pendidikan terakhir">
                                 <div class="invalid-feedback"></div>
                             </div>
-
+                        </div>
+                        <div class="col-md-6">
                             <div class="d-flex flex-column mb-2">
-                                <label class="d-flex align-items-center fs-sm-8 fs-lg-6 fw-bolder mb-1">
-                                    <span>Desa/Kelurahan</span>
+                                <label class="fs-sm-8 fs-lg-6 fw-bolder mb-1">
+                                    <span>Penghasilan</span>
                                 </label>
-                                <select data-control="select2" id="id_desa"
-                                        class="form-control form-control-sm fs-sm-8 fs-lg-6"
-                                        data-allow-clear="true" data-placeholder="Pilih Desa/Kelurahan">
-                                </select>
+                                <input type="number" id="penghasilan"
+                                       class="form-control form-control-sm fs-sm-8 fs-lg-6" min="0"
+                                       placeholder="Masukkan penghasilan">
                                 <div class="invalid-feedback"></div>
                             </div>
                         </div>
@@ -219,9 +114,13 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-sm btn-dark fs-sm-8 fs-lg-6" data-bs-dismiss="modal"
-                            aria-label="Close">Close
+                            aria-label="Close">
+                        Tutup
                     </button>
-                    <button type="submit" class="btn btn-sm btn-primary fs-sm-8 fs-lg-6">Simpan</button>
+                    <button type="submit" class="btn btn-sm btn-primary fs-sm-8 fs-lg-6" id="btn_save"
+                            style="display:none;">
+                        Simpan
+                    </button>
                 </div>
             </div>
         </form>
