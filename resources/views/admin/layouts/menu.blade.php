@@ -17,39 +17,39 @@
                 href="{{ route('admin.sdm.sdm.index') }}">
                 <span class="menu-title">SDM</span>
             </a>
-            @php
+            {{-- @php
                 $referensiActive = request()->routeIs('admin.ref.jenjang-pendidikan.*') ||
                                    request()->routeIs('admin.ref.hubungan-keluarga.*') ||
                                    request()->routeIs('admin.ref.jenis-asuransi.*') ||
                                    request()->routeIs('admin.ref.eselon.*');
-            @endphp
+            @endphp --}}
             <div data-kt-menu-trigger="click"
-                 class="menu-item menu-accordion {{ $referensiActive ? 'here show' : '' }}">
+                 class="menu-item menu-accordion">
                 <span class="menu-link">
                     <span class="menu-title">Referensi</span>
                     <span class="menu-arrow"></span>
                 </span>
                 <div class="menu-sub menu-sub-accordion menu-active-bg">
                     <a class="menu-link {{ request()->routeIs('admin.ref.jenjang-pendidikan.*') ? 'active' : '' }}"
-                       href="{{ route('admin.ref.jenjang-pendidikan.index') }}">
+                       href="#">
                         <span class="menu-title px-4">Jenjang Pendidikan</span>
                     </a>
                     <a class="menu-link {{ request()->routeIs('admin.ref.hubungan-keluarga.*') ? 'active' : '' }}"
-                       href="{{ route('admin.ref.hubungan-keluarga.index') }}">
+                       href="#">
                         <span class="menu-title px-4">Hubungan Keluarga</span>
                     </a>
                     <a class="menu-link {{ request()->routeIs('admin.ref.jenis-asuransi.*') ? 'active' : '' }}"
-                       href="{{ route('admin.ref.jenis-asuransi.index') }}">
+                       href="#">
                         <span class="menu-title px-4">Jenis Asuransi</span>
                     </a>
                     <a class="menu-link {{ request()->routeIs('admin.ref.eselon.*') ? 'active' : '' }}"
-                       href="{{ route('admin.ref.eselon.index') }}">
+                       href="#">
                         <span class="menu-title px-4">Eselon</span>
                     </a>
                 </div>
             </div>
             @php
-                $masterActive = request()->routeIs('admin.master.periode.*') || request()->routeIs('admin.master.unit.*')|| request()->routeIs('admin.master.jabatan.*');
+                $masterActive = request()->routeIs('admin.master.periode.') || request()->routeIs('admin.master.unit.')|| request()->routeIs('admin.master.jabatan.*');
             @endphp
             <div data-kt-menu-trigger="click"
                  class="menu-item menu-accordion {{ $masterActive ? 'here show' : '' }}">
@@ -59,15 +59,15 @@
                 </span>
                 <div class="menu-sub menu-sub-accordion menu-active-bg">
                     <a class="menu-link {{ request()->routeIs('admin.master.periode.*') ? 'active' : '' }}"
-                       href="{{ route('admin.master.periode.index') }}">
+                       href="#">
                         <span class="menu-title px-4">Periode</span>
                     </a>
                     <a class="menu-link {{ request()->routeIs('admin.master.unit.*') ? 'active' : '' }}"
-                       href="{{ route('admin.master.unit.index') }}">
+                       href="#">
                         <span class="menu-title px-4">Unit</span>
                     </a>
                     <a class="menu-link {{ request()->routeIs('admin.master.jabatan.*') ? 'active' : '' }}"
-                       href="{{ route('admin.master.jabatan.index') }}">
+                       href="#">
                         <span class="menu-title px-4">Jabatan</span>
                     </a>
                 </div>

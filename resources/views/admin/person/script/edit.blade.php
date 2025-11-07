@@ -16,12 +16,12 @@
             .then(function (response) {
                 if (response.success) {
                     $('#edit_nama_lengkap').val(response.data.nama_lengkap);
-                    $('#edit_nama_panggilan').text(response.data.nama_panggilan);
+                    $('#edit_nama_panggilan').val(response.data.nama_panggilan);
                     $('#edit_jk').val(response.data.jk).trigger('change');
                     $('#edit_tempat_lahir').val(response.data.tempat_lahir);
                     edit_tanggal_lahir.setDate(response.data.tanggal_lahir);
                     $('#edit_nik').val(response.data.nik);
-                    $('#edit_agama').text(response.data.agama);
+                    $('#edit_agama').val(response.data.agama);
                     $('#edit_kk').val(response.data.kk);
                     $('#edit_alamat').val(response.data.alamat);
                     $('#edit_rt').val(response.data.rt);
@@ -37,7 +37,7 @@
                         const photoUrl = '{{ route('admin.view-file', [':folder', ':filename']) }}'
                             .replace(':folder', 'person')
                             .replace(':filename', response.data.foto);
-                        $('#edit_image_preview').css('background-image', `url('${photoUrl}')`);
+                        $('#edit_image_preview').css('background-image', url('${photoUrl}'));
                         $('#edit_image_preview').css('background-size', 'cover');
                         $('#edit_image_preview').css('background-position', 'center');
                     } else {
@@ -47,11 +47,11 @@
                     }
                     fetchDataDropdown('{{ route('api.almt.provinsi') }}', '#edit_id_provinsi', 'provinsi', 'provinsi', () => {
                         $('#edit_id_provinsi').val(response.data.id_provinsi).trigger('change');
-                        fetchDataDropdown(`{{ route('api.almt.kabupaten', ':id') }}`.replace(':id', response.data.id_provinsi), '#edit_id_kabupaten', 'kabupaten', 'kabupaten', () => {
+                        fetchDataDropdown({{ route('api.almt.kabupaten', ':id') }}.replace(':id', response.data.id_provinsi), '#edit_id_kabupaten', 'kabupaten', 'kabupaten', () => {
                             $('#edit_id_kabupaten').val(response.data.id_kabupaten).trigger('change');
-                             fetchDataDropdown(`{{ route('api.almt.kecamatan', ':id') }}`.replace(':id', response.data.id_kabupaten),'#edit_id_kecamatan', 'kecamatan', 'kecamatan', () => {
+                             fetchDataDropdown({{ route('api.almt.kecamatan', ':id') }}.replace(':id', response.data.id_kabupaten),'#edit_id_kecamatan', 'kecamatan', 'kecamatan', () => {
                                     $('#edit_id_kecamatan').val(response.data.id_kecamatan).trigger('change');
-                                    fetchDataDropdown(`{{ route('api.almt.desa', ':id') }}`.replace(':id', response.data.id_kecamatan),'#edit_id_desa', 'desa', 'desa', () => {
+                                    fetchDataDropdown({{ route('api.almt.desa', ':id') }}.replace(':id', response.data.id_kecamatan),'#edit_id_desa', 'desa', 'desa', () => {
                                             $('#edit_id_desa').val(response.data.id_desa).trigger('change');
                                     });
                                 });
@@ -72,7 +72,7 @@
             $('#edit_id_desa').empty().append('<option value="">-- Pilih Desa/Kelurahan --</option>');
 
             if (provinsiId) {
-                const kabupatenUrl = `{{ route('api.almt.kabupaten', ':id') }}`.replace(':id', provinsiId);
+                const kabupatenUrl = {{ route('api.almt.kabupaten', ':id') }}.replace(':id', provinsiId);
                 fetchDataDropdown(kabupatenUrl, '#edit_id_kabupaten', 'kabupaten', 'kabupaten');
             }
         });
@@ -83,7 +83,7 @@
             $('#edit_id_desa').empty().append('<option value="">-- Pilih Desa/Kelurahan --</option>');
 
             if (kabupatenId) {
-                const kecamatanUrl = `{{ route('api.almt.kecamatan', ':id') }}`.replace(':id', kabupatenId);
+                const kecamatanUrl = {{ route('api.almt.kecamatan', ':id') }}.replace(':id', kabupatenId);
                 fetchDataDropdown(kecamatanUrl, '#edit_id_kecamatan', 'kecamatan', 'kecamatan');
             }
         });
@@ -93,7 +93,7 @@
             $('#edit_id_desa').empty().append('<option value="">-- Pilih Desa/Kelurahan --</option>');
 
             if (kecamatanId) {
-                const desaUrl = `{{ route('api.almt.desa', ':id') }}`.replace(':id', kecamatanId);
+                const desaUrl = {{ route('api.almt.desa', ':id') }}.replace(':id', kecamatanId);
                 fetchDataDropdown(desaUrl, '#edit_id_desa', 'desa', 'desa');
             }
         });
