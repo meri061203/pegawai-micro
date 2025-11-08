@@ -18,6 +18,7 @@ final readonly class PersonService
     {
         return Person::select([
             'id',
+            'uuid_person',
             'nama_lengkap',
             'nama_panggilan',
             'jk',
@@ -99,6 +100,7 @@ final readonly class PersonService
                 'person.id',
                 'person.nik',
                 'person.nama_lengkap',
+                'person.nama_panggilan',
                 'person.tempat_lahir',
                 'person.tanggal_lahir',
                 'ref_almt_desa.desa',
@@ -107,7 +109,7 @@ final readonly class PersonService
                 'ref_almt_provinsi.provinsi',
             ])
             ->where('person.nik', $nik)
-            ->orderBy('person.nama')
+            ->orderBy('person.nama_lengkap')
             ->first();
     }
 
@@ -119,13 +121,13 @@ final readonly class PersonService
             ->leftJoin('ref_almt_kabupaten', 'ref_almt_kecamatan.id_kabupaten', '=', 'ref_almt_kabupaten.id_kabupaten')
             ->leftJoin('ref_almt_provinsi', 'ref_almt_kabupaten.id_provinsi', '=', 'ref_almt_provinsi.id_provinsi')
             ->select([
-                'person.id', 'person.uuid', 'person.nama', 'person.jk',
+                'person.id', 'person.uuid_person', 'person.nama_lengkap', 'person.nama_panggilan', 'person.jk',
                 'person.tempat_lahir', 'person.tanggal_lahir', 'person.nik', 'person.nomor_kk',
                 'person.npwp', 'person.nomor_hp', 'person.foto', 'person.alamat',
                 'ref_almt_desa.desa', 'ref_almt_kecamatan.kecamatan',
                 'ref_almt_kabupaten.kabupaten', 'ref_almt_provinsi.provinsi',
             ])
-            ->where('person.uuid', $uuid)
+            ->where('person.uuid_person', $uuid)
             ->first();
     }
 }

@@ -24,31 +24,31 @@ final readonly class PersonSdmService
     public function getHistoriByUuid(string $uuid): Collection
     {
         return PersonSdm::query()
-            ->leftJoin('person', 'person.id_person', '=', 'person_sdm.id_person')
+            ->leftJoin('person', 'person.id', '=', 'sdm.id_person')
             ->select([
-                'person_sdm.id',
-                'person_sdm.nip',
-                'person_sdm.status_pegawai',
-                'person_sdm.tipe_pegawai',
-                'person_sdm.tanggal_masuk',
+                'sdm.id',
+                'sdm.nip',
+                'sdm.status_pegawai',
+                'sdm.tipe_pegawai',
+                'sdm.tanggal_masuk',
                 'person.nama_lengkap',
                 'person.uuid_person',
             ])
             ->where('person.uuid_person', $uuid)
-            ->orderByDesc('person_sdm.tanggal_masuk')
+            ->orderByDesc('sdm.tanggal_masuk')
             ->get();
     }
 
     public function getListData(): Collection
     {
         return PersonSdm::query()
-            ->leftJoin('person', 'person.id_person', '=', 'person_sdm.id_person')
+            ->leftJoin('person', 'person.id', '=', 'sdm.id_person')
             ->select([
-                'person_sdm.id',
-                'person_sdm.nip',
-                'person_sdm.status_pegawai',
-                'person_sdm.tipe_pegawai',
-                'person_sdm.tanggal_masuk',
+                'sdm.id',
+                'sdm.nip',
+                'sdm.status_pegawai',
+                'sdm.tipe_pegawai',
+                'sdm.tanggal_masuk',
                 'person.nama_lengkap',
                 'person.uuid_person',
             ])
@@ -63,15 +63,15 @@ final readonly class PersonSdmService
     public function getDetailData(string $id): ?PersonSdm
     {
         return PersonSdm::query()
-            ->leftJoin('person', 'person.id_person', '=', 'person_sdm.id_person')
+            ->leftJoin('person', 'person.id', '=', 'sdm.id_person')
             ->select([
-                'person_sdm.*',
+                'sdm.*',
                 'person.nik',
                 'person.kk',
                 'person.no_hp',
                 'person.nama_lengkap',
             ])
-            ->where('person_sdm.id_sdm', $id)
+            ->where('sdm.id', $id)
             ->first();
     }
 
